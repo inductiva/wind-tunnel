@@ -26,24 +26,24 @@ a **simulation scenario**.
 Let's set an F1 car in a toy **wind tunnel** and run a simulation scenario:
 
 ```python
-from lib import models
-from lib import scenarios
+import windtunnel
 
-# Create a model of  a wind tunnel with a flow velocity of 30 m/s
-# and a domain of 18x8x8 m
-wind_tunnel = models.WindTunnel(
-    flow_velocity=(30, 0, 0),
-    x_min=-3, x_max=15, y_min=-4, y_max=4, z_min=0, z_max=8)
 
-# Initialize a scenario with the wind tunnel
-wind_tunnel_scenario = scenarios.WindTunnelScenario(wind_tunnel)
+# Create wind tunnel object
+wind_tunnel = windtunnel.WindTunnel()
 
-# Establish the num_iterations and resolution via the simulation parameters
-sim_params = scenarios.SimulationParameters(num_iterations=100, resolution=2)
+# Submit the simulation task
+task = wind_tunnel.simulate(object_path="assets/f1_car.obj",
+                            wind_speed_ms=10,
+                            num_iterations=50,
+                            resolution=3)
 
-# Submit a non-blocking simulation task
-task = wind_tunnel_scenario.simulate(object_path="assets/f1_car.obj",
-                                     sim_params=sim_params)
+# Wait for the task to finish
+task.wait()
+
+# Download all of the output files of the simulation
+output_dir = task.download_outputs()
+
 ```
 
 In this code snippet, we are using the `WindTunnelScenario` to configure the
