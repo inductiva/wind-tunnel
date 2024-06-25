@@ -4,13 +4,15 @@ from typing import Optional
 
 import pyvista as pv
 import trimesh
+import vtk
+
+vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
 
 # dimensions in meters
 NORMALIZED_X_MAX = 10.0
 NORMALIZED_Y_MAX = 2.0
 NORMALIZED_Z_MAX = 1.0
 
-# vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
 
 # Object properties to be used in the simulation.
 # path: Path to the transformed object file.
