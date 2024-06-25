@@ -27,9 +27,8 @@ def main(_):
 
     pressure_field = output.get_object_pressure_field()
     pressure_field.render()
-    
+
 
 if __name__ == "__main__":
     logging.set_verbosity(logging.INFO)
     app.run(main)
-

@@ -109,15 +109,14 @@ class WindTunnel:
         rotate_angle = 0
         num_vcpus = 4
 
-       # Create a temporary directory
+        # Create a temporary directory
         temp_dir = tempfile.mkdtemp()
-        obj_dir = os.path.join(temp_dir,"constant/triSurface/")
+        obj_dir = os.path.join(temp_dir, "constant/triSurface/")
         os.makedirs(obj_dir)
         processed_object_path = os.path.join(obj_dir, "object.obj")
 
-        object_properties = prepare_object(
-            object_path, rotate_angle, processed_object_path)
-        
+        object_properties = prepare_object(object_path, rotate_angle,
+                                           processed_object_path)
 
         inductiva.TemplateManager.render_dir(
             TEMPLATE_DIR,
@@ -125,17 +124,17 @@ class WindTunnel:
             wind_speed=wind_speed_ms,
             num_iterations=num_iterations,
             resolution=resolution,
-            num_subdomains=num_vcpus, # Number of subdomains for parallel processing
+            num_subdomains=
+            num_vcpus,  # Number of subdomains for parallel processing
             object_properties=object_properties,
             **self._walls.to_dict(),
-            )        
+        )
 
-        task = simulators.OpenFOAM().run(
-            input_dir=temp_dir,
-            on=on,
-            commands=self.get_commands(),
-            n_vcpus=num_vcpus,
-            use_hwthreads=False)
+        task = simulators.OpenFOAM().run(input_dir=temp_dir,
+                                         on=on,
+                                         commands=self.get_commands(),
+                                         n_vcpus=num_vcpus,
+                                         use_hwthreads=False)
 
         task_dir = os.path.join(self._inputs_dir, task.id)
         os.makedirs(task_dir, exist_ok=True)

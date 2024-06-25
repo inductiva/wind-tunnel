@@ -1,5 +1,4 @@
 """Pre-processing utilities."""
-import os
 from collections import namedtuple
 from typing import Optional
 
@@ -139,9 +138,8 @@ def prepare_object(
     # mesh.save(dest_object_path)
     # Instead, use trimesh to save the mesh to .obj format
     trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
-                                    faces=mesh.faces.reshape((-1, 4))[:, 1:])
-    trimesh.exchange.export.export_mesh(trimesh_mesh,
-                                        dest_object_path)
+                                   faces=mesh.faces.reshape((-1, 4))[:, 1:])
+    trimesh.exchange.export.export_mesh(trimesh_mesh, dest_object_path)
     # print(f"Object saved to {dest_object_path}")
 
     # This requires (on Debian / Ubuntu):
@@ -151,6 +149,5 @@ def prepare_object(
     # pl.add_mesh(mesh)
     # pl.export_obj(dest_object_path)
     # pl.close()
-
 
     return properties
