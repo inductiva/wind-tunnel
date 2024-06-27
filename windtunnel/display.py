@@ -64,8 +64,12 @@ class WindTunnelVisualizer:
     def add_mesh(self,
                  mesh: pv.PolyData,
                  color: str = "blue",
-                 opacity: float = 1.0):
-        self.plt.add_mesh(mesh, color=color, opacity=opacity)
+                 opacity: float = 1.0,
+                 show_edges: bool = False):
+        self.plt.add_mesh(mesh,
+                          color=color,
+                          opacity=opacity,
+                          show_edges=show_edges)
 
     def _add_walls(self, opacity: float = 0.5):
         plane = get_x_aligned_rectangle(self.x_min, self.y_min, self.y_max,

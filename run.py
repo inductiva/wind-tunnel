@@ -25,17 +25,10 @@ def main(_):
                                 num_iterations=50,
                                 resolution=3,
                                 debug=FLAGS.debug)
-    # Wait for the task to finish
-    task.wait()
 
-    # Download all of the output files of the simulation
-    output_dir = task.download_outputs()
-
-    # Post-process methods: Render the pressure field over the object
-    output = windtunnel.WindTunnelOutput(output_dir, 50)
-
-    pressure_field = output.get_object_pressure_field()
-    pressure_field.render()
+    print(
+        f"To visualize results, run:\n python view_outputs.py --task_id {task.id}"
+    )
 
 
 if __name__ == "__main__":
