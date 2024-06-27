@@ -36,32 +36,13 @@ from typing import Optional
 
 import inductiva
 from inductiva import resources, simulators
+import pyvista as pv
 
-from .pre_processing import prepare_object
+from . import pre_processing
+from .display import WindTunnelVisualizer
 import tempfile
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
-
-
-@dataclass
-class RectangularBox:
-    """Rectangular box dimensions in 3D space."""
-
-    x_min: float = -6
-    x_max: float = 14
-    y_min: float = -5
-    y_max: float = 5
-    z_min: float = 0
-    z_max: float = 8
-
-    def __post_init__(self):
-        assert self.x_min < self.x_max
-        assert self.y_min < self.y_max
-        assert self.z_min < self.z_max
-
-    def to_dict(self):
-        """Converts the object to a dictionary."""
-        return asdict(self)
 
 
 class WindTunnel:
@@ -70,7 +51,14 @@ class WindTunnel:
     def __init__(self, inputs_dir: str = "./inductiva_input/"):
         """Initializes the `WindTunnel` scenario object.
         """
-        self._walls = RectangularBox()
+        self._walls = {
+            "x_min": -6,
+            "x_max": 14,
+            "y_min": -5,
+            "y_max": 5,
+            "z_min": 0,
+            "z_max": 8
+        }
         self._inputs_dir = inputs_dir
 
     def get_commands(self):
@@ -91,9 +79,11 @@ class WindTunnel:
         self,
         object_path: str,
         wind_speed_ms: float,
+        rotate_z_degrees: float,
         num_iterations: int,
         resolution: int,
         on: Optional[resources.MachineGroup] = None,
+        debug: bool = False,
     ):
         """Simulates the wind tunnel scenario synchronously.
 
@@ -106,17 +96,34 @@ class WindTunnel:
         """
 
         # Some temporarily hardcoded values
-        rotate_angle = 0
-        num_vcpus = 4
+        num_vcpus = 4  # default queue specific
+
+        mesh = pv.read(object_path)
+
+        if debug:
+            visualizer = WindTunnelVisualizer(**self._walls)
+            visualizer.add_mesh(mesh, color="blue", opacity=0.5)
+
+        # Bounding box of the object is
+        mesh, displace_vector, = pre_processing.move_mesh_to_origin(mesh)
+        mesh = mesh.rotate_z(rotate_z_degrees)
+        mesh, scaling_factor = pre_processing.normalize_mesh(mesh)
+
+        if debug:
+            visualizer.add_mesh(mesh, color="green")
+            visualizer.show()
+
+        # Compute project area into the inlet face
+        area = pre_processing.compute_projected_area(mesh,
+                                                     face_normal=(1, 0, 0))
+        length = pre_processing.compute_object_length(mesh)
 
         # Create a temporary directory
         temp_dir = tempfile.mkdtemp()
         obj_dir = os.path.join(temp_dir, "constant/triSurface/")
         os.makedirs(obj_dir)
         processed_object_path = os.path.join(obj_dir, "object.obj")
-
-        object_properties = prepare_object(object_path, rotate_angle,
-                                           processed_object_path)
+        pre_processing.save_mesh_obj(mesh, processed_object_path)
 
         inductiva.TemplateManager.render_dir(
             TEMPLATE_DIR,
@@ -124,10 +131,10 @@ class WindTunnel:
             wind_speed=wind_speed_ms,
             num_iterations=num_iterations,
             resolution=resolution,
-            num_subdomains=
-            num_vcpus,  # Number of subdomains for parallel processing
-            object_properties=object_properties,
-            **self._walls.to_dict(),
+            num_subdomains=num_vcpus,  # num subdomains for parallel processing
+            area=area,
+            length=length,
+            **self._walls,
         )
 
         task = simulators.OpenFOAM().run(input_dir=temp_dir,
@@ -137,7 +144,7 @@ class WindTunnel:
                                          use_hwthreads=False)
 
         task_dir = os.path.join(self._inputs_dir, task.id)
-        os.makedirs(task_dir, exist_ok=True)
+        os.makedirs(task_dir)
         shutil.move(temp_dir, task_dir)
 
         return task

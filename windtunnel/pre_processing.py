@@ -14,16 +14,6 @@ NORMALIZED_Y_MAX = 2.0
 NORMALIZED_Z_MAX = 1.0
 
 
-# Object properties to be used in the simulation.
-# path: Path to the transformed object file.
-# area: Projected area of the object into the inlet face.
-# length: Length of the object in the x-axis.
-ObjectProperties = namedtuple("ObjectProperties", [
-    "path", "area", "length", "original_z_displacement", "scaling_factor",
-    "rotate_angle"
-])
-
-
 def _get_scaling_factor(mesh: pv.PolyData) -> float:
     """
     Calculate the scaling factor required to normalize the mesh dimensions.
@@ -50,27 +40,39 @@ def _get_scaling_factor(mesh: pv.PolyData) -> float:
     return min(scaling_factor_x, scaling_factor_y, scaling_factor_z)
 
 
-def set_object_position(mesh, rotate_angle: float = 0):
-    """Set object in the correct position and orientation in the wind tunnel.
+def normalize_mesh(mesh: pv.PolyData) -> pv.PolyData:
+    """
+    Normalize the dimensions of the input mesh.
+
+    The mesh is scaled to fit within the specified bounds of the wind tunnel.
 
     Args:
-        mesh: pyvista.PolyData mesh representing the object.
-        rotate_angle: Angle to rotate the object around the z-axis.
+        mesh (pv.PolyData): The input mesh to be normalized.
+
+    Returns:
+        pv.PolyData: The normalized mesh.
+        float: The scaling factor applied to the mesh.
     """
-
-    # CSM input objects need to be corrected so that they face the inlet.
-    mesh = mesh.rotate_x(90)
-
-    original_z_displacement = mesh.bounds[4]
-
-    # Set the input object on the floor of the wind tunnel - z=0.
-    mesh = mesh.translate([0, 0, -original_z_displacement])
-    mesh = mesh.rotate_z(rotate_angle)
-
     scaling_factor = _get_scaling_factor(mesh)
     mesh = mesh.scale(scaling_factor)
 
-    return mesh, original_z_displacement, scaling_factor
+    return mesh, scaling_factor
+
+
+def move_mesh_to_origin(mesh: pv.PolyData):
+    """
+    Translate the mesh to the origin of the wind tunnel.
+    """
+    # Get the z-coordinate of the lowest point of the mesh
+    z_displace = mesh.bounds[4]
+    # Get the y-coordinate of the center of the mesh
+    y_displace = (mesh.bounds[2] + mesh.bounds[3]) / 2
+    # Get the x-coordinate of the center of the mesh
+    x_displace = (mesh.bounds[0] + mesh.bounds[1]) / 2
+
+    displace_vector = [-x_displace, -y_displace, -z_displace]
+    mesh = mesh.translate(displace_vector)
+    return mesh, displace_vector
 
 
 def compute_projected_area(mesh: pv.PolyData, face_normal):
@@ -90,66 +92,14 @@ def compute_projected_area(mesh: pv.PolyData, face_normal):
     return area
 
 
-def get_object_properties(object_path: str, mesh: pv.PolyData,
-                          original_z_displacement: float, scaling_factor: float,
-                          rotate_angle: float):
-    """Get the properties of the object to be used in the simulation.
-
-    Args:
-        object_path: Path to the object file.
-        mesh: pyvista.PolyData mesh representing the object.
-    """
-
-    # Compute project area into the inlet face
-    area = compute_projected_area(mesh, face_normal=(1, 0, 0))
-
+def compute_object_length(mesh: pv.PolyData):
     # Length of the object in x-direction
     length = mesh.bounds[1] - mesh.bounds[0]
 
-    return ObjectProperties(object_path, area, length, original_z_displacement,
-                            scaling_factor, rotate_angle)
+    return length
 
 
-def prepare_object(
-    source_object_path: str,
-    rotate_angle: float = 0,
-    dest_object_path: Optional[str] = None,
-) -> ObjectProperties:
-    """Prepare the object to set the conditions for the simulation.
-
-    There are two steps performed:
-    - Rotate the object into the correct orientation, and then, according to
-    user input. By default, the rotated object is saved in the same location as
-    the source object.
-    - Compute the project area of the object into the inlet face.
-    """
-    dest_object_path = dest_object_path or source_object_path
-
-    mesh = pv.read(source_object_path)
-    if mesh is None:
-        raise RuntimeError(f"Failed to read object from {source_object_path}")
-
-    mesh, original_z_displacement, scaling_factor = set_object_position(
-        mesh, rotate_angle)
-
-    properties = get_object_properties(dest_object_path, mesh,
-                                       original_z_displacement, scaling_factor,
-                                       rotate_angle)
-
-    # pyvista does not support saving to .obj format
-    # mesh.save(dest_object_path)
-    # Instead, use trimesh to save the mesh to .obj format
+def save_mesh_obj(mesh, dest_object_path):
     trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
                                    faces=mesh.faces.reshape((-1, 4))[:, 1:])
     trimesh.exchange.export.export_mesh(trimesh_mesh, dest_object_path)
-    # print(f"Object saved to {dest_object_path}")
-
-    # This requires (on Debian / Ubuntu):
-    # $ sudo apt install libgl1-mesa-glx xvfb
-    #pv.start_xquartz()
-    # pl = pv.Plotter(off_screen=True)
-    # pl.add_mesh(mesh)
-    # pl.export_obj(dest_object_path)
-    # pl.close()
-
-    return properties
