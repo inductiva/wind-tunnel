@@ -1,5 +1,5 @@
 absl-py
-git+https://github.com/inductiva/inductiva@development
+inductiva
 numpy
 pyvista
 trimesh
