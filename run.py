@@ -26,9 +26,8 @@ def main(_):
                                 resolution=3,
                                 debug=FLAGS.debug)
 
-    print(
-        f"To visualize results, run:\n python view_outputs.py --task_id {task.id}"
-    )
+    print(f"To visualize results, run:\n\n"
+          f"python view_outputs.py --task_id {task.id}\n")
 
 
 if __name__ == "__main__":
