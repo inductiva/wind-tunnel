@@ -86,10 +86,8 @@ is to use the `foamDictionary` command, which is more flexible and allows for
 automated changes. However, the commands need to be passed before starting the
 simulation and for multiple changes, it starts to get cumbersome.
 
-To provide this flexibility, **Inductiva API** provides a templating mechanism
+To provide this flexibility, **Inductiva API** provides a [templating mechanism](https://tutorials.inductiva.ai/intro_to_api/templating.html)
 that allows users to change the simulation parameters on the spot, and the
 variables can be modified via Python. The goal is to simplify the iteration
 over several parameters and run several tests in parallel.
 
-Let's see this in action in the [next tutorial](/docs/2_TEMPLATING.md) and start
-abstracting the configuration of our **Wind Tunnel**.
