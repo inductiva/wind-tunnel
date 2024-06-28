@@ -39,7 +39,14 @@ def main(_):
     visualizer = windtunnel.WindTunnelVisualizer(-6, 14, -5, 5, 0, 8)
     # visualizer.add_mesh(domain_mesh, color="blue", opacity=0.5, show_edges=True)
     # "p" for pressure field.
-    visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
+    # visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
+
+    pressure_field_mesh = postprocessing.get_interpolated_pressure_field(
+        output_dir, object_mesh)
+    visualizer.add_mesh(pressure_field_mesh,
+                        color="red",
+                        opacity=1,
+                        scalars="p")
 
     visualizer.show()
 

@@ -40,7 +40,7 @@ def get_output_mesh(sim_output_path: str):
     return domain_mesh, object_mesh
 
 
-def get_interpolated_pressure_field(input_mesh: pv.PolyData,
+def get_interpolated_pressure_field(sim_output_path: str,
                                     object_mesh: pv.PolyData):
     """Get a pressure scalar field over mesh points of the object.
 
@@ -48,6 +48,10 @@ def get_interpolated_pressure_field(input_mesh: pv.PolyData,
         pv.PolyData: The object mesh with the pressure field interpolated
         from the values in the input mesh.
     """
+
+    input_mesh_path = os.path.join(sim_output_path, "constant", "triSurface",
+                                   "object.obj")
+    input_mesh = pv.read(input_mesh_path)
 
     interpolated_mesh = input_mesh.interpolate(object_mesh,
                                                sharpness=10,
