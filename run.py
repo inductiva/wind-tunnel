@@ -8,6 +8,10 @@ from absl import flags
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
+flags.DEFINE_boolean('display', False,
+                     'Open PyVista window with inputs visualization')
+flags.DEFINE_string('object_path', 'assets/f1_car.obj',
+                    'Path to the object file')
 
 
 def main(_):
@@ -19,12 +23,12 @@ def main(_):
     wind_tunnel = windtunnel.WindTunnel()
 
     # Submit the simulation task
-    task = wind_tunnel.simulate(object_path="assets/f1_car.obj",
+    task = wind_tunnel.simulate(object_path=FLAGS.object_path,
                                 wind_speed_ms=10,
                                 rotate_z_degrees=0,
                                 num_iterations=50,
                                 resolution=3,
-                                debug=FLAGS.debug)
+                                display=FLAGS.display)
 
     print(f"To visualize results, run:\n\n"
           f"python view_outputs.py --task_id {task.id}\n")

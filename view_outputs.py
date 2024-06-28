@@ -5,7 +5,10 @@ from absl import logging
 
 import inductiva
 import windtunnel
+from windtunnel import postprocessing
 from absl import flags
+import os
+import pyvista as pv
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
@@ -25,21 +28,20 @@ def main(_):
     # Download all of the output files of the simulation
     output_dir = task.download_outputs()
 
-    # Post-process methods: Render the pressure field over the object
-    output = windtunnel.WindTunnelOutput(output_dir, 50)
+    coeff = postprocessing.get_force_coefficients(output_dir)
 
-    domain_mesh, object_mesh = output.get_output_mesh()
+    print("Force Coefficients:")
+    for key, value in coeff.items():
+        print(f"{key}: {value}")
+
+    domain_mesh, object_mesh = postprocessing.get_output_mesh(output_dir)
 
     visualizer = windtunnel.WindTunnelVisualizer(-6, 14, -5, 5, 0, 8)
-    # visualizer.add_mesh(domain_mesh,
-    #                     color="blue",
-    #                     opacity=0.5,
-    #                     show_edges=True)
-    visualizer.add_mesh(object_mesh, color="red", opacity=1.0)
-    visualizer.show()
+    # visualizer.add_mesh(domain_mesh, color="blue", opacity=0.5, show_edges=True)
+    # "p" for pressure field.
+    visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
 
-    pressure_field = output.get_object_pressure_field()
-    pressure_field.render()
+    visualizer.show()
 
 
 if __name__ == "__main__":

@@ -30,7 +30,6 @@ pressure_field, cutting planes and force coefficients.
 """
 
 import os
-from dataclasses import asdict, dataclass
 import shutil
 from typing import Optional
 
@@ -83,7 +82,7 @@ class WindTunnel:
         num_iterations: int,
         resolution: int,
         on: Optional[resources.MachineGroup] = None,
-        debug: bool = False,
+        display: bool = False,
     ):
         """Simulates the wind tunnel scenario synchronously.
 
@@ -93,6 +92,8 @@ class WindTunnel:
             num_iterations: Number of iterations to run the simulation.
             resolution: Resolution of the simulation grid.
             on: Machine group to run the simulation on.
+            display: Whether to display the meshes of object and wind tunnel on
+                the screen, before running the simulation.
         """
 
         # Some temporarily hardcoded values
@@ -100,7 +101,7 @@ class WindTunnel:
 
         mesh = pv.read(object_path)
 
-        if debug:
+        if display:
             visualizer = WindTunnelVisualizer(**self._walls)
             visualizer.add_mesh(mesh, color="blue", opacity=0.5)
 
@@ -109,7 +110,7 @@ class WindTunnel:
         mesh = mesh.rotate_z(rotate_z_degrees)
         mesh, scaling_factor = pre_processing.normalize_mesh(mesh)
 
-        if debug:
+        if display:
             visualizer.add_mesh(mesh, color="green")
             visualizer.show()
 
@@ -144,7 +145,6 @@ class WindTunnel:
                                          use_hwthreads=False)
 
         task_dir = os.path.join(self._inputs_dir, task.id)
-        os.makedirs(task_dir)
-        shutil.move(temp_dir, task_dir)
+        shutil.copytree(temp_dir, task_dir)
 
         return task

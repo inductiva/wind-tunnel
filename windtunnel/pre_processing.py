@@ -1,6 +1,4 @@
 """Pre-processing utilities."""
-from collections import namedtuple
-from typing import Optional
 
 import pyvista as pv
 import trimesh
