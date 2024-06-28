@@ -36,8 +36,10 @@ wind_tunnel = windtunnel.WindTunnel()
 # small number of iterations.
 task = wind_tunnel.simulate(object_path="assets/f1_car.obj",
                             wind_speed_ms=10,
+                            rotate_z_degrees=0,
                             num_iterations=50,
-                            resolution=3)
+                            resolution=3,
+                            display=True)
 
 # Wait for the task to finish
 task.wait()
