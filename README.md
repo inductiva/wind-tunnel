@@ -55,6 +55,88 @@ simulation parameters and simulating via **Inductiva API**. This scenario is a
 toy example that can be extended to more complex simulation scenarios, (e.g.,
 add rotation of wheels to the vehicle). 
 
+## Scripts Overview
+The repository includes several scripts to facilitate running and managing your wind tunnel simulations:
+
+### `run.py`
+
+Quickly run standalone wind tunnel simulations using this script. It accepts the following arguments:
+
+- `--display`: Opens a pyvista window with the windtunnel simulation
+- `--object_path`: Path to the input object file
+- `--wind_speed_ms`: Wind speed in meters per second (default: 10)
+- `--resolution`: Resolution of the OpenFOAM simulation (default: 3, max: 5)
+- `--rotate_z_degrees`: Rotation angle around the Z-axis in degrees (default: 0)
+- `--num_iterations`: Number of iterations to run the simulation (default: 50)
+- `--machine_group_name`: Machine group to run the simulation on (default: default queue)
+
+Example usage:
+```bash 
+python run.py --object_path assets/f1_car.obj --display
+```
+
+
+### `batch_run`:
+
+Submit multiple simulations with varying arguments. This script is useful for exploring different scenarios efficiently. Inside the script you can change the simulation arguments.
+
+- `--object_path`: Path to the input object file
+- `--machine_group_name`: Machine group to run the simulation on (default: default queue)
+
+```bash 
+python batch_run.py --object_path assets/f1_car.obj 
+```
+
+
+### `view_outputs.py`
+
+Display the results of a completed simulation in a PyVista window and print the resulting force coefficients. This script waits for the task to finish and requires a `task_id` argument.
+
+```
+python view_outputs.py --task_id <task_id>
+```
+
+## Running Simulations on Dedicated Hardware
+To run simulations on dedicated hardware, you need to start a machine group.
+
+First, list all available machine types with:
+
+```bash 
+inductiva resources available
+```
+
+
+### Starting a Machine Group
+Note: Spot machines are preemptible but are approximately 5x cheaper. If a machine becomes unavailable during use, the simulation will automatically restart.
+
+Instantiating a `MachineGroup` object with 5 preemptible machines of type c2-standard-32:
+
+```python 
+import inductiva
+
+machine_group = inductiva.resources.MachineGroup(
+    machine_type="c2-standard-30", num_machines=5, spot=True)
+machine_group.start()
+
+print(machine_group.name)
+
+# Don't forget to terminate the machine group after using it:
+machine_group.terminate()
+```
+
+### Using the Machine Group
+After starting the machine group, pass its name to the `run.py` or `batch_run.py` scripts.
+
+```
+python run.py --object_path assets/f1_car.obj --machine_group_name <machine_group_name>
+```
+
+### Elastic Machine Groups
+You can also create an `ElasticMachineGroup`, which scales machines up or down automatically based on the simulation queue.
+
+For more details on running simulations on dedicated hardware, refer to the [Inductiva Machine Group documentation](https://docs.inductiva.ai/en/latest/how_to/run-parallel_simulations.html)
+
+---
 
 **Disclaimer**: For the sake of time the simulations performed here are low resolution and don't represent any practical real-world application.
 
