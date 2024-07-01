@@ -8,13 +8,11 @@ the visualizations associated. Namely:
 
 Current Support - OpenFOAM
 """
-from typing import Literal
-import pathlib
 import os
+import pathlib
 
-from absl import logging
-import pyvista as pv
 import numpy as np
+import pyvista as pv
 
 # Map physical field names to OpenFOAM notation
 PHYSICAL_FIELD = {"pressure": "p", "velocity": "U"}

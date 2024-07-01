@@ -31,15 +31,15 @@ pressure_field, cutting planes and force coefficients.
 
 import os
 import shutil
+import tempfile
 from typing import Optional
 
 import inductiva
-from inductiva import resources, simulators
 import pyvista as pv
+from inductiva import resources, simulators
 
 from . import pre_processing
 from .display import WindTunnelVisualizer
-import tempfile
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
@@ -105,9 +105,11 @@ class WindTunnel:
             visualizer = WindTunnelVisualizer(**self._walls)
             visualizer.add_mesh(mesh, color="blue", opacity=0.5)
 
-        # Bounding box of the object is
+        # save the transformations so we can revert them later
+        # pylint: disable=unused-variable
         mesh, displace_vector, = pre_processing.move_mesh_to_origin(mesh)
         mesh = mesh.rotate_z(rotate_z_degrees)
+        # pylint: disable=unused-variable
         mesh, scaling_factor = pre_processing.normalize_mesh(mesh)
 
         if display:

@@ -1,10 +1,8 @@
 """Example run of a WindTunnel scenario based on Inductiva API."""
 
-from absl import app
-from absl import logging
+from absl import app, flags, logging
 
 import windtunnel
-from absl import flags
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
@@ -34,6 +32,6 @@ def main(_):
           f"python view_outputs.py --task_id {task.id}\n")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logging.set_verbosity(logging.INFO)
     app.run(main)

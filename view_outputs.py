@@ -1,14 +1,10 @@
 """Example run of a WindTunnel scenario based on Inductiva API."""
 
-from absl import app
-from absl import logging
-
 import inductiva
+from absl import app, flags, logging
+
 import windtunnel
 from windtunnel import postprocessing
-from absl import flags
-import os
-import pyvista as pv
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
@@ -30,27 +26,28 @@ def main(_):
 
     coeff = postprocessing.get_force_coefficients(output_dir)
 
-    print("Force Coefficients:")
+    print('Force Coefficients:')
     for key, value in coeff.items():
-        print(f"{key}: {value}")
+        print(f'{key}: {value}')
 
+    # pylint: disable=unused-variable
     domain_mesh, object_mesh = postprocessing.get_output_mesh(output_dir)
 
     visualizer = windtunnel.WindTunnelVisualizer(-6, 14, -5, 5, 0, 8)
-    # visualizer.add_mesh(domain_mesh, color="blue", opacity=0.5, show_edges=True)
+    # visualizer.add_mesh(domain_mesh, opacity=0.5, show_edges=True)
     # "p" for pressure field.
     # visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
 
     pressure_field_mesh = postprocessing.get_interpolated_pressure_field(
         output_dir, object_mesh)
     visualizer.add_mesh(pressure_field_mesh,
-                        color="red",
+                        color='red',
                         opacity=1,
-                        scalars="p")
+                        scalars='p')
 
     visualizer.show()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logging.set_verbosity(logging.INFO)
     app.run(main)

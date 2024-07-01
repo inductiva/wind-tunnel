@@ -1,5 +1,5 @@
+"""Helper class to visualize the wind tunnel."""
 import pyvista as pv
-
 import vtk
 
 vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
@@ -42,6 +42,17 @@ def get_z_aligned_rectangle(z, x_min, x_max, y_min, y_max):
 
 
 class WindTunnelVisualizer:
+    """
+    A class for visualizing wind tunnel data.
+
+    Parameters:
+    - x_min (float): The minimum x-coordinate of the visualization space.
+    - x_max (float): The maximum x-coordinate of the visualization space.
+    - y_min (float): The minimum y-coordinate of the visualization space.
+    - y_max (float): The maximum y-coordinate of the visualization space.
+    - z_min (float): The minimum z-coordinate of the visualization space.
+    - z_max (float): The maximum z-coordinate of the visualization space.
+    """
 
     def __init__(self, x_min: float, x_max: float, y_min: float, y_max: float,
                  z_min: float, z_max: float):
@@ -57,9 +68,15 @@ class WindTunnelVisualizer:
         self.plt.show_bounds()
         self._add_walls()
         self._add_origin_sphere()
-        # self.set_camera_position([(0, 0, 15), (0, 0, 0), (0, 1, 0)])
 
     def _add_origin_sphere(self, radius: float = 0.1, color: str = "black"):
+        """
+        Add a sphere at the origin of the visualization space.
+
+        Parameters:
+        - radius (float): The radius of the sphere.
+        - color (str): The color of the sphere.
+        """
         sphere = pv.Sphere(radius=radius, center=(0, 0, 0))
         self.plt.add_mesh(sphere, color=color)
 
@@ -69,6 +86,16 @@ class WindTunnelVisualizer:
                  opacity: float = 1.0,
                  show_edges: bool = False,
                  scalars: str = None):
+        """
+        Add a mesh to the visualization.
+
+        Parameters:
+        - mesh (pv.PolyData): The mesh to be added.
+        - color (str): The color of the mesh.
+        - opacity (float): The opacity of the mesh.
+        - show_edges (bool): Whether to show the edges of the mesh.
+        - scalars (str): The scalar data to be used for coloring the mesh.
+        """
         self.plt.add_mesh(
             mesh,
             color=color,
@@ -78,6 +105,12 @@ class WindTunnelVisualizer:
         )
 
     def _add_walls(self, opacity: float = 0.5):
+        """
+        Add walls to the visualization.
+
+        Parameters:
+        - opacity (float): The opacity of the walls.
+        """
         plane = get_x_aligned_rectangle(self.x_min, self.y_min, self.y_max,
                                         self.z_min, self.z_max)
         self.plt.add_mesh(plane, color="red", opacity=opacity)
@@ -94,13 +127,19 @@ class WindTunnelVisualizer:
 
         plane = get_z_aligned_rectangle(self.z_min, self.x_min, self.x_max,
                                         self.y_min, self.y_max)
-        self.plt.add_mesh(plane,
-                          color="blue",
-                          opacity=opacity,
-                          show_edges=True)
+        self.plt.add_mesh(plane, color="blue", opacity=opacity, show_edges=True)
 
     def set_camera_position(self, camera_position):
+        """
+        Set the camera position of the visualization.
+
+        Parameters:
+        - camera_position: The new camera position.
+        """
         self.plt.camera_position = camera_position
 
     def show(self):
+        """
+        Show the visualization.
+        """
         self.plt.show()
