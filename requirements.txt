@@ -2,3 +2,5 @@ absl-py
 inductiva
 numpy
 pyvista
+trimesh
+vtk
