@@ -54,6 +54,7 @@ def get_interpolated_pressure_field(sim_output_path: str,
     interpolated_mesh = input_mesh.interpolate(object_mesh,
                                                sharpness=10,
                                                radius=0.1,
+                                               n_points=1,
                                                strategy="closest_point")
 
     return interpolated_mesh

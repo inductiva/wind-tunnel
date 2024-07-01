@@ -36,9 +36,9 @@ from typing import Optional
 
 import inductiva
 import pyvista as pv
-from inductiva import resources, simulators
+from inductiva import simulators
 
-from . import pre_processing
+from . import pre_processing, utils
 from .display import WindTunnelVisualizer
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
@@ -81,8 +81,8 @@ class WindTunnel:
         rotate_z_degrees: float,
         num_iterations: int,
         resolution: int,
-        on: Optional[resources.MachineGroup] = None,
         display: bool = False,
+        machine_group_name: Optional[str] = None,
     ):
         """Simulates the wind tunnel scenario synchronously.
 
@@ -91,19 +91,19 @@ class WindTunnel:
             wind_speed_ms: Velocity of the air flow in m/s.
             num_iterations: Number of iterations to run the simulation.
             resolution: Resolution of the simulation grid.
-            on: Machine group to run the simulation on.
             display: Whether to display the meshes of object and wind tunnel on
                 the screen, before running the simulation.
+            machine_group_name: Name of the machine group to run simulation on.
         """
-
-        # Some temporarily hardcoded values
-        num_vcpus = 4  # default queue specific
 
         mesh = pv.read(object_path)
 
         if display:
             visualizer = WindTunnelVisualizer(**self._walls)
             visualizer.add_mesh(mesh, color="blue", opacity=0.5)
+
+        mg = utils.get_machine_group(machine_group_name)
+        num_vcpus = utils.get_number_subdomains(mg)
 
         # save the transformations so we can revert them later
         # pylint: disable=unused-variable
@@ -141,7 +141,7 @@ class WindTunnel:
         )
 
         task = simulators.OpenFOAM().run(input_dir=temp_dir,
-                                         on=on,
+                                         on=mg,
                                          commands=self.get_commands(),
                                          n_vcpus=num_vcpus,
                                          use_hwthreads=False)

@@ -10,6 +10,9 @@ flags.DEFINE_boolean('display', False,
                      'Open PyVista window with inputs visualization')
 flags.DEFINE_string('object_path', 'assets/f1_car.obj',
                     'Path to the object file')
+flags.DEFINE_string(
+    'machine_group_name', None,
+    'Machine group to run the simulation on. Defaults to default queue')
 
 
 def main(_):
@@ -26,7 +29,8 @@ def main(_):
                                 rotate_z_degrees=0,
                                 num_iterations=50,
                                 resolution=3,
-                                display=FLAGS.display)
+                                display=FLAGS.display,
+                                machine_group_name=FLAGS.machine_group_name)
 
     print(f'To visualize results, run:\n\n'
           f'python view_outputs.py --task_id {task.id}\n')
