@@ -45,6 +45,9 @@ def main(_):
                         opacity=1,
                         scalars='p')
 
+    streamlines_mesh = postprocessing.get_streamlines(output_dir, domain_mesh)
+    visualizer.add_mesh(streamlines_mesh, color='blue', opacity=0.5)
+
     visualizer.show()
 
 
