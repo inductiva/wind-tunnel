@@ -129,6 +129,21 @@ def get_streamlines(
 def get_flow_slices(domain_mesh: pv.PolyData,
                     object_mesh: pv.PolyData,
                     plane: str = "xz"):
+    """
+    Get a slice of the flow domain mesh based on the specified plane.
+
+    Parameters:
+    - domain_mesh (pv.PolyData): The domain mesh.
+    - object_mesh (pv.PolyData): The object mesh.
+    - plane (str, optional): The plane to slice the flow domain.
+                             Valid options are "xy", "yz", and "xz".
+
+    Returns:
+    - flow_slice (pv.PolyData): The sliced mesh representing the flow domain.
+
+    Raises:
+    - ValueError: If an invalid plane is specified.
+    """
     object_height = object_mesh.bounds[5] - object_mesh.bounds[4]
 
     if plane == "xy":
