@@ -19,7 +19,7 @@ PHYSICAL_FIELD = {"pressure": "p", "velocity": "U"}
 
 
 def get_output_mesh(sim_output_path: str):
-    """Get domain and object mesh info at the steady-state."""
+    """Get domain and object mesh from sim_output_path."""
 
     # The OpenFOAM data reader from PyVista requires that a file named
     # "foam.foam" exists in the simulation output directory.
@@ -109,3 +109,24 @@ def get_streamlines(
     )
     streamlines = streamlines_mesh.tube(radius=streamline_radius)
     return streamlines
+
+
+def get_flow_slices(domain_mesh: pv.PolyData,
+                    object_mesh: pv.PolyData,
+                    plane: str = "xz"):
+    object_height = object_mesh.bounds[5] - object_mesh.bounds[4]
+
+    if plane == "xy":
+        normal = (0, 0, 1)
+        origin = (0, 0, object_height / 2)
+    elif plane == "yz":
+        normal = (1, 0, 0)
+        origin = (0, 0, 0)
+    elif plane == "xz":
+        normal = (0, 1, 0)
+        origin = (0, 0, 0)
+    else:
+        raise ValueError("Invalid plane. Choose from 'xy', 'yz', 'xz'.")
+
+    flow_slice = domain_mesh.slice(normal=normal, origin=origin)
+    return flow_slice

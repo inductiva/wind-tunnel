@@ -38,15 +38,23 @@ def main(_):
     # "p" for pressure field.
     # visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
 
-    pressure_field_mesh = postprocessing.get_interpolated_pressure_field(
-        output_dir, object_mesh)
-    visualizer.add_mesh(pressure_field_mesh,
-                        color='red',
-                        opacity=1,
-                        scalars='p')
+    # pressure_field_mesh = postprocessing.get_interpolated_pressure_field(
+    #     output_dir, object_mesh)
+    # visualizer.add_mesh(pressure_field_mesh,
+    #                     color='red',
+    #                     opacity=1,
+    #                     scalars='p')
 
-    streamlines_mesh = postprocessing.get_streamlines(output_dir, domain_mesh)
-    visualizer.add_mesh(streamlines_mesh, color='blue', opacity=0.5)
+    # streamlines_mesh = postprocessing.get_streamlines(output_dir, domain_mesh)
+    # visualizer.add_mesh(streamlines_mesh, color='blue', opacity=0.5)
+
+    flow_slice = postprocessing.get_flow_slices(domain_mesh,
+                                                object_mesh,
+                                                plane='xz')
+
+    visualizer.add_mesh(object_mesh, scalars='p')
+    visualizer.add_mesh(flow_slice, scalars='p', opacity=0.5)
+    visualizer.set_camera_position_flow_slices(flow_slice)
 
     visualizer.show()
 
