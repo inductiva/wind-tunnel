@@ -92,7 +92,7 @@ def get_force_coefficients(sim_output_path: str):
 
 def get_streamlines(
         sim_output_path: str,
-        object_mesh: pv.PolyData,
+        domain_mesh: pv.PolyData,
         n_points: int = 100,
         initial_step_length: float = 1,
         source_radius: float = 1.1,
@@ -100,7 +100,7 @@ def get_streamlines(
         streamline_radius: float = 0.005,
 ):
     num_time_steps = get_num_time_steps(sim_output_path)
-    streamlines_mesh = object_mesh.streamlines(
+    streamlines_mesh = domain_mesh.streamlines(
         max_time=num_time_steps,
         n_points=n_points,
         initial_step_length=initial_step_length,
@@ -109,3 +109,5 @@ def get_streamlines(
     )
     streamlines = streamlines_mesh.tube(radius=streamline_radius)
     return streamlines
+
+def get_flow_slices()
