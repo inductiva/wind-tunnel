@@ -99,6 +99,21 @@ def get_streamlines(
         source_center: tuple = (0, 0, 0),
         streamline_radius: float = 0.005,
 ):
+    """
+    Generate streamlines based on simulation output and domain mesh.
+
+    Parameters:
+    sim_output_path (str): Path to the simulation output file.
+    domain_mesh (pv.PolyData): PolyData object representing the domain mesh.
+    n_points (int, optional): Number of points to generate each streamline.
+    initial_step_length (float, optional): Initial step length.
+    source_radius (float, optional): Radius of the source region.
+    source_center (tuple, optional): Center coordinates of the source region.
+    streamline_radius (float, optional): Radius of the generated streamlines.
+
+    Returns:
+    pv.PolyData: PolyData object representing the generated streamlines.
+    """
     num_time_steps = get_num_time_steps(sim_output_path)
     streamlines_mesh = domain_mesh.streamlines(
         max_time=num_time_steps,
