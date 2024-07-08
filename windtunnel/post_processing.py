@@ -109,5 +109,3 @@ def get_streamlines(
     )
     streamlines = streamlines_mesh.tube(radius=streamline_radius)
     return streamlines
-
-def get_flow_slices()
