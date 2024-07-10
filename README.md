@@ -55,6 +55,21 @@ simulation parameters and simulating via **Inductiva API**. This scenario is a
 toy example that can be extended to more complex simulation scenarios, (e.g.,
 add rotation of wheels to the vehicle). 
 
+
+## Installation
+
+1.	Clone the repository:
+```
+git clone https://github.com/inductiva/wind-tunnel.git
+cd wind-tunnel
+```
+
+2.  Install the package:
+```
+pip install .
+```
+
+
 ## Scripts Overview
 The repository includes several scripts to facilitate running and managing your wind tunnel simulations:
 
