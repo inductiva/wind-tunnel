@@ -66,7 +66,7 @@ class WindTunnelVisualizer:
         self.plt = pv.Plotter()
         self.plt.add_axes()
         self.plt.show_bounds()
-        self._add_walls()
+        # self._add_walls()
         self._add_origin_sphere()
 
     def _add_origin_sphere(self, radius: float = 0.1, color: str = "black"):
@@ -95,14 +95,13 @@ class WindTunnelVisualizer:
         - opacity (float): The opacity of the mesh.
         - show_edges (bool): Whether to show the edges of the mesh.
         - scalars (str): The scalar data to be used for coloring the mesh.
+        - **kwargs: Additional keyword arguments for the add_mesh function.
         """
-        self.plt.add_mesh(
-            mesh,
-            color=color,
-            opacity=opacity,
-            show_edges=show_edges,
-            scalars=scalars,
-        )
+        self.plt.add_mesh(mesh,
+                          color=color,
+                          opacity=opacity,
+                          show_edges=show_edges,
+                          scalars=scalars)
 
     def _add_walls(self, opacity: float = 0.5):
         """
@@ -143,3 +142,12 @@ class WindTunnelVisualizer:
         Show the visualization.
         """
         self.plt.show()
+
+    def set_camera_position_flow_slices(self, flow_slice):
+        mesh = flow_slice
+        center = mesh.center
+        normal = mesh.compute_normals()["Normals"].mean(axis=0)
+
+        self.plt.camera.position = center + normal
+        self.plt.camera.focal_point = center
+        self.plt.reset_camera(bounds=mesh.bounds)
