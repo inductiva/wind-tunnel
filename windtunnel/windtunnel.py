@@ -146,7 +146,7 @@ class WindTunnel:
         task = simulators.OpenFOAM().run(input_dir=temp_dir,
                                          on=mg,
                                          commands=self.get_commands(),
-                                         n_vcpus=num_vcpus,
+                                         n_vcpus=num_subdomains,
                                          use_hwthreads=False)
 
         task_dir = os.path.join(self._inputs_dir, task.id)
