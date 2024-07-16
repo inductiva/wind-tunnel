@@ -104,7 +104,7 @@ class WindTunnel:
             visualizer.add_mesh(mesh, color="blue", opacity=0.5)
 
         mg = utils.get_machine_group(machine_group_name)
-        num_vcpus = utils.get_number_subdomains(mg)
+        num_subdomains = utils.get_number_subdomains(mg)
 
         # save the transformations so we can revert them later
         # pylint: disable=unused-variable
@@ -137,7 +137,7 @@ class WindTunnel:
             wind_speed=wind_speed_ms,
             num_iterations=num_iterations,
             resolution=resolution,
-            num_subdomains=num_vcpus,  # num subdomains for parallel processing
+            num_subdomains=num_subdomains,
             area=area,
             length=length,
             **self._walls,
