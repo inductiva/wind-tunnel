@@ -81,6 +81,7 @@ class WindTunnel:
         rotate_z_degrees: float,
         num_iterations: int,
         resolution: int,
+        normalize_mesh: bool,
         display: bool = False,
         machine_group_name: Optional[str] = None,
     ):
@@ -107,10 +108,12 @@ class WindTunnel:
 
         # save the transformations so we can revert them later
         # pylint: disable=unused-variable
-        mesh, displace_vector, = pre_processing.move_mesh_to_origin(mesh)
+        if normalize_mesh:
+            mesh, displace_vector, = pre_processing.move_mesh_to_origin(mesh)
         mesh = mesh.rotate_z(rotate_z_degrees)
         # pylint: disable=unused-variable
-        mesh, scaling_factor = pre_processing.normalize_mesh(mesh)
+        if normalize_mesh:
+            mesh, scaling_factor = pre_processing.normalize_mesh(mesh)
 
         if display:
             visualizer.add_mesh(mesh, color="green")
@@ -149,4 +152,7 @@ class WindTunnel:
         task_dir = os.path.join(self._inputs_dir, task.id)
         shutil.copytree(temp_dir, task_dir)
 
-        return task
+        if normalize_mesh:
+            return task, displace_vector, scaling_factor
+        else:
+            return task, None, None

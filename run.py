@@ -16,6 +16,8 @@ flags.DEFINE_integer('rotate_z_degrees', 0,
                      'Rotation angle around the Z-axis in degrees')
 flags.DEFINE_integer('num_iterations', 50,
                      'Number of iterations to run the simulation')
+flags.DEFINE_integer('normalize_mesh', False,
+                     'Scale the object to fit the windtunnel')
 flags.DEFINE_string(
     'machine_group_name', None,
     'Machine group to run the simulation on. Defaults to default queue')
@@ -50,6 +52,7 @@ def main(_):
                                 num_iterations=FLAGS.num_iterations,
                                 resolution=FLAGS.resolution,
                                 display=FLAGS.display,
+                                normalize_mesh=FLAGS.normalize_mesh,
                                 machine_group_name=FLAGS.machine_group_name)
 
     print(f'To visualize results, run:\n\n'
