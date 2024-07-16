@@ -42,6 +42,7 @@ def run_simulation(config):
                                 rotate_z_degrees=config['rotate_z_degrees'],
                                 num_iterations=config['num_iterations'],
                                 resolution=config['resolution'],
+                                normalize_mesh=False,
                                 machine_group_name=FLAGS.machine_group_name)
     return task.id  # Return the task ID for logging or further processing
 
