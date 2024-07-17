@@ -125,8 +125,8 @@ class WindTunnel:
 
         self.object = mesh
         return {
-            'displace_vector': displace_vector,
-            'scaling_factor': scaling_factor
+            "displace_vector": displace_vector,
+            "scaling_factor": scaling_factor
         }
 
     def get_commands(self):
@@ -167,8 +167,8 @@ class WindTunnel:
             wind_speed_ms (float): Air flow speed in m/s.
             num_iterations (int): Simulation iteration count.
             resolution (int): Grid resolution.
-            machine_group_name (Optional[str]): Machine group for simulation (default: None).
-            inputs_base_dir (Optional[str]): Input files directory (default: "./inductiva_input").
+            machine_group_name (Optional[str]): Machine group for simulation.
+            inputs_base_dir (Optional[str]): Input files directory.
         """
         if not self.object:
             raise ValueError("Object not set. Please set object first.")

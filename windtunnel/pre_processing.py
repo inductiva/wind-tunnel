@@ -16,10 +16,11 @@ def _get_scaling_factor(
 
     Returns the most restrictive scaling factor to ensure the entire mesh fits
     within the specified bounds.
+    length, width, height = max_dimensions
 
     Args:
         mesh (pv.PolyData): The input mesh to be normalized.
-        max_dimensions (tuple[float, float, float], optional): The maximum dimensions of the object.
+        max_dimensions: The maximum dimensions of the object.
 
     Returns:
         float: The scaling factor to apply to the mesh.
@@ -45,10 +46,11 @@ def normalize_mesh(
     Normalize the dimensions of the input mesh.
 
     The mesh is scaled to fit within the specified bounds of the wind tunnel.
+    length, width, height = max_dimensions
 
     Args:
         mesh (pv.PolyData): The input mesh to be normalized.
-        max_dimensions (tuple[float, float, float], optional): The maximum dimensions of the object.
+        max_dimensions: The maximum dimensions of the object.
 
     Returns:
         pv.PolyData: The normalized mesh.
