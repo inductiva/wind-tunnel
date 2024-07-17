@@ -43,6 +43,25 @@ from .display import WindTunnelVisualizer
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
+# Factors used to determine the position of the walls within the wind tunnel
+
+# The object is placed closer to the inlet to avoid wall effects
+X_MIN_FACTOR = -0.3
+X_MAX_FACTOR = 0.7
+# The object is centered in the y-direction
+Y_MIN_FACTOR = -0.5
+Y_MAX_FACTOR = 0.5
+# The object is placed at z=0 and z is always positive
+Z_MIN_FACTOR = 0.0
+Z_MAX_FACTOR = 1.0
+
+# Factors used to determine the maximum size of the object when normalizing it
+# These factors were chosen so that the object fits within a circle of radius 1
+# for the default wind tunnel size
+MAX_OBJECT_LENGTH_FACTOR = 0.5
+MAX_OBJECT_WIDTH_FACTOR = 0.2
+MAX_OBJECT_HEIGHT_FACTOR = 0.125
+
 
 class WindTunnel:
     """WindTunnel scenario."""
@@ -50,17 +69,19 @@ class WindTunnel:
     def __init__(self, dimensions: tuple[int, int, int] = (20, 10, 8)):
         """
         Initializes the wind tunnel with given dimensions.
+        length, width, height = dimensions
 
         Parameters:
         - dimensions: A tuple (length, width, height) for the tunnel size.
         """
+        self.length, self.width, self.height = dimensions
         self._walls = {
-            "x_min": -dimensions[0] * 0.3,
-            "x_max": dimensions[0] * 0.7,
-            "y_min": -dimensions[1] * 0.5,
-            "y_max": dimensions[1] * 0.5,
-            "z_min": 0,
-            "z_max": dimensions[2],
+            "x_min": self.length * X_MIN_FACTOR,
+            "x_max": self.length * X_MAX_FACTOR,
+            "y_min": self.width * Y_MIN_FACTOR,
+            "y_max": self.width * Y_MAX_FACTOR,
+            "z_min": self.height * Z_MIN_FACTOR,
+            "z_max": self.height * Z_MAX_FACTOR,
         }
         self.dimensions = dimensions
         self.object = None
@@ -91,10 +112,11 @@ class WindTunnel:
         if rotate_z_degrees:
             mesh = mesh.rotate_z(rotate_z_degrees)
         if normalize:
-            length, width, height = self.dimensions
-            max_dimensions = (length / 2, width / 5, height / 8)
+            max_object_dimensions = (self.length * MAX_OBJECT_LENGTH_FACTOR,
+                                     self.width * MAX_OBJECT_WIDTH_FACTOR,
+                                     self.height * MAX_OBJECT_HEIGHT_FACTOR)
             mesh, scaling_factor = pre_processing.normalize_mesh(
-                mesh, max_dimensions)
+                mesh, max_object_dimensions)
 
         # Compute project area into the inlet face
         self.object_area = pre_processing.compute_projected_area(
