@@ -37,13 +37,17 @@ configurations = [
 
 def run_simulation(config):
     wind_tunnel = windtunnel.WindTunnel()
-    task = wind_tunnel.simulate(object_path=FLAGS.object_path,
-                                wind_speed_ms=config['wind_speed_ms'],
-                                rotate_z_degrees=config['rotate_z_degrees'],
+    wind_tunnel.set_object(FLAGS.object_path,
+                           rotate_z_degrees=config['rotate_z_degrees'])
+
+    if FLAGS.display:
+        wind_tunnel.display()
+
+    task = wind_tunnel.simulate(wind_speed_ms=config['wind_speed_ms'],
                                 num_iterations=config['num_iterations'],
                                 resolution=config['resolution'],
                                 machine_group_name=FLAGS.machine_group_name)
-    return task.id  # Return the task ID for logging or further processing
+    return task.id
 
 
 def main(_):
