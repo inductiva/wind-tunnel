@@ -13,6 +13,8 @@
 inductiva_input/
 inductiva_output/
 
+docs/_build/
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
