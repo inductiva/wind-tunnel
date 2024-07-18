@@ -1,0 +1,45 @@
+name: Build and Deploy Sphinx Documentation
+
+on:
+  push:
+    branches:
+      - main  # Replace with your main branch name
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # Replace with your Python version
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Replace with your requirements file if needed
+        
+    - name: Generate API documentation
+      run: |
+        sphinx-apidoc -f -o docs/ windtunnel
+        
+    - name: Build HTML documentation
+      run: |
+        sphinx-build -b html docs docs/_build
+        
+    - name: Deploy to GitHub Pages
+      if: success()  # Only deploy if the build was successful
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        touch docs/_build/.nojekyll  # Create .nojekyll to prevent Jekyll processing
+        git checkout gh-pages || git checkout --orphan gh-pages
+        git rm -rf .
+        mv docs/_build/* .
+        git add .
+        git commit -m "Deploy Sphinx documentation"
+        git push -f origin gh-pages
