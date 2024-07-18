@@ -12,6 +12,14 @@ Welcome to Wind Tunnel!
 Indices and tables
 ==================
 
+windtunnel module
+==================
+
+.. automodule:: windtunnel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
