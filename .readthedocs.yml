@@ -13,7 +13,7 @@ build:
   jobs:
     pre_build:
       - echo "Running sphinx-apidoc"
-      - sphinx-apidoc -f -o docs/ windtunne
+      - sphinx-apidoc -f -o docs/ windtunnel
       - echo "Running sphinx-build"
       - sphinx-build -b html docs docs/_build
 
