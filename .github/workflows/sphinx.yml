@@ -36,6 +36,5 @@ jobs:
       if: success()
       run: |
         pip install ghp-import
-        touch docs/_build/.nojekyll  # Create .nojekyll to prevent Jekyll processing
         ghp-import -n -p -f docs/_build
         
