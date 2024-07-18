@@ -30,10 +30,3 @@ jobs:
     - name: Build HTML documentation
       run: |
         sphinx-build -b html docs docs/_build
-        
-    - name: Deploy to GitHub Pages
-      if: success()
-      run: |
-        pip install ghp-import
-        ghp-import -n -p -f docs/_build
-        
