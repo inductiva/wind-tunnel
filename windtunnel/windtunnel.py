@@ -60,7 +60,7 @@ class WindTunnel:
         }
         self._inputs_dir = inputs_dir
 
-    def get_commands(self):
+    def _get_commands(self):
 
         commands = [
             "runApplication surfaceFeatures",
@@ -142,7 +142,7 @@ class WindTunnel:
 
         task = simulators.OpenFOAM().run(input_dir=temp_dir,
                                          on=mg,
-                                         commands=self.get_commands(),
+                                         commands=self._get_commands(),
                                          n_vcpus=num_vcpus,
                                          use_hwthreads=False)
 

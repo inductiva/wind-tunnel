@@ -1,25 +1,18 @@
-=======================
-Welcome to Wind Tunnel!
-=======================
+windtunnel package
+==================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 5
+   :caption: Table of Contents
+   :name: mastertoc
 
-   windtunnel
-   modules
-
-Indices and tables
-==================
-
-windtunnel module
-==================
+   windtunnel.windtunnel
+   windtunnel.display
+   windtunnel.post_processing
+   windtunnel.pre_processing
+   windtunnel.utils
 
 .. automodule:: windtunnel
    :members:
    :undoc-members:
    :show-inheritance:
-   
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
