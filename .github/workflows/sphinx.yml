@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main  # Replace with your main branch name
+      - docs
 
 jobs:
   build-and-deploy:
