@@ -206,7 +206,8 @@ class WindTunnel:
                                          n_vcpus=num_vcpus,
                                          use_hwthreads=False)
 
-        task_dir = os.path.join(inputs_base_dir, task.id)
-        shutil.copytree(temp_dir, task_dir)
+        if inputs_base_dir:
+            task_dir = os.path.join(inputs_base_dir, task.id)
+            shutil.copytree(temp_dir, task_dir)
 
         return task
