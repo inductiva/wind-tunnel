@@ -169,7 +169,11 @@ class WindTunnel:
             num_iterations (int): Simulation iteration count.
             resolution (int): Grid resolution.
             machine_group_name (Optional[str]): Machine group for simulation.
-            inputs_base_dir (Optional[str]): Input files directory.
+            inputs_base_dir (Optional[str]): Local directory where the OpenFOAM
+                inputs files that are constructed by the WindTunnel class will
+                be stored. This can be useful for later reference, and for
+                inspecting exactly what the Inductiva API passed to OpenFOAM.
+                If set to None, nothing will be stored on the local disk.
         """
         if not self.object:
             raise ValueError("Object not set. Please set object first.")
