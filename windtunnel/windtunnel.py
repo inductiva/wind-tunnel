@@ -126,6 +126,7 @@ class WindTunnel:
         self.object = mesh
         return {
             "displace_vector": displace_vector,
+            "rotate_z_degrees": rotate_z_degrees,
             "scaling_factor": scaling_factor
         }
 
