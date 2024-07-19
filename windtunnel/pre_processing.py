@@ -71,7 +71,7 @@ def move_mesh_to_origin(mesh: pv.PolyData):
 
     Returns:
         pv.PolyData: The translated mesh.
-        list[float]: The displacement vector applied to the mesh.
+        tuple[float, float, float]: The displacement vector applied to the mesh.
     """
     # Get the z-coordinate of the lowest point of the mesh
     z_displace = mesh.bounds[4]
@@ -80,7 +80,7 @@ def move_mesh_to_origin(mesh: pv.PolyData):
     # Get the x-coordinate of the center of the mesh
     x_displace = (mesh.bounds[0] + mesh.bounds[1]) / 2
 
-    displace_vector = [-x_displace, -y_displace, -z_displace]
+    displace_vector = (-x_displace, -y_displace, -z_displace)
     mesh = mesh.translate(displace_vector)
     return mesh, displace_vector
 
