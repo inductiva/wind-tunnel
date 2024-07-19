@@ -65,7 +65,7 @@ class WindTunnelOutputs:
         Generates streamlines from the domain mesh.
 
         Args:
-            n_points (int, optional): Number of seed points. Defaults to 100.
+            n_points (int, optional): Number of streamlines. Defaults to 100.
             initial_step_length (float, optional): Initial step length.
                                                    Defaults to 1.
             source_radius (float, optional): Radius of seeding sphere.
@@ -87,14 +87,14 @@ class WindTunnelOutputs:
         streamlines = streamlines_mesh.tube(radius=streamline_radius)
         return streamlines
 
-    def get_pressure_field(self):
+    def get_openfoam_object_mesh(self):
         """
         Retrieves the pressure field over the domain mesh.
 
         Returns:
-            pv.PolyData: Domain mesh with pressure field data.
+            pv.PolyData: Object mesh with pressure field data.
         """
-        return self.domain_mesh
+        return self.object_mesh
 
     def get_interpolated_pressure_field(self):
         """

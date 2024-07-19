@@ -4,7 +4,6 @@ import inductiva
 from absl import app, flags, logging
 
 import windtunnel
-from windtunnel import WindTunnelOutputs
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
@@ -24,7 +23,7 @@ def main(_):
     # Download all of the output files of the simulation
     output_dir = task.download_outputs()
 
-    outputs = WindTunnelOutputs(output_dir)
+    outputs = windtunnel.WindTunnelOutputs(output_dir)
 
     coeff = outputs.get_force_coefficients()
     pressure_field_mesh = outputs.get_interpolated_pressure_field()
