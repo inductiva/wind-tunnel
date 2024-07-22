@@ -43,13 +43,16 @@ def main(_):
     # Initialize the scenario
     wind_tunnel = windtunnel.WindTunnel()
 
+    wind_tunnel.set_object(FLAGS.object_path,
+                           rotate_z_degrees=FLAGS.rotate_z_degrees)
+
+    if FLAGS.display:
+        wind_tunnel.display()
+
     # Submit the simulation task
-    task = wind_tunnel.simulate(object_path=FLAGS.object_path,
-                                wind_speed_ms=FLAGS.wind_speed_ms,
-                                rotate_z_degrees=FLAGS.rotate_z_degrees,
+    task = wind_tunnel.simulate(wind_speed_ms=FLAGS.wind_speed_ms,
                                 num_iterations=FLAGS.num_iterations,
                                 resolution=FLAGS.resolution,
-                                display=FLAGS.display,
                                 machine_group_name=FLAGS.machine_group_name)
 
     print(f'To visualize results, run:\n\n'
