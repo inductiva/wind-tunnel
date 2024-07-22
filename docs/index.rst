@@ -11,8 +11,3 @@ windtunnel package
    windtunnel.post_processing
    windtunnel.pre_processing
    windtunnel.utils
-
-.. automodule:: windtunnel
-   :members:
-   :undoc-members:
-   :show-inheritance:
