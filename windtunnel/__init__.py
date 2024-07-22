@@ -1,4 +1,4 @@
-""" This module contains the WindTunnel class and its associated functions. """
-from . import post_processing as postprocessing
+"""Expose a limited set of classes to the user."""
 from .display import WindTunnelVisualizer
 from .windtunnel import WindTunnel
+from .windtunnel_outputs import WindTunnelOutputs

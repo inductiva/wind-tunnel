@@ -43,25 +43,100 @@ from .display import WindTunnelVisualizer
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
+# Factors used to determine the position of the walls within the wind tunnel
+
+# The object is placed closer to the inlet to avoid wall effects
+X_MIN_FACTOR = -0.3
+X_MAX_FACTOR = 0.7
+# The object is centered in the y-direction
+Y_MIN_FACTOR = -0.5
+Y_MAX_FACTOR = 0.5
+# The object is placed at z=0 and z is always positive
+Z_MIN_FACTOR = 0.0
+Z_MAX_FACTOR = 1.0
+
+# Factors used to determine the maximum size of the object when normalizing it
+# These factors were chosen so that the object fits within a circle of radius 1
+# for the default wind tunnel size
+MAX_OBJECT_LENGTH_FACTOR = 0.5
+MAX_OBJECT_WIDTH_FACTOR = 0.2
+MAX_OBJECT_HEIGHT_FACTOR = 0.125
+
 
 class WindTunnel:
     """WindTunnel scenario."""
 
-    def __init__(self, inputs_dir: str = "./inductiva_input/"):
-        """Initializes the `WindTunnel` scenario object.
+    def __init__(self, dimensions: tuple[int, int, int] = (20, 10, 8)):
         """
+        Initializes the wind tunnel with given dimensions.
+        length, width, height = dimensions
+
+        Parameters:
+        - dimensions: A tuple (length, width, height) for the tunnel size.
+        """
+        self.length, self.width, self.height = dimensions
         self._walls = {
-            "x_min": -6,
-            "x_max": 14,
-            "y_min": -5,
-            "y_max": 5,
-            "z_min": 0,
-            "z_max": 8
+            "x_min": self.length * X_MIN_FACTOR,
+            "x_max": self.length * X_MAX_FACTOR,
+            "y_min": self.width * Y_MIN_FACTOR,
+            "y_max": self.width * Y_MAX_FACTOR,
+            "z_min": self.height * Z_MIN_FACTOR,
+            "z_max": self.height * Z_MAX_FACTOR,
         }
-        self._inputs_dir = inputs_dir
+        self.dimensions = dimensions
+        self.object = None
+        self.object_area = 0
+        self.object_length = 0
+
+    def set_object(self,
+                   object_path: str,
+                   rotate_z_degrees: float = 0,
+                   normalize: bool = True,
+                   center: bool = True):
+        """Load an object into the windtunnel scenario. Optionally rotates, 
+        normalizes, and centers it.
+
+        Args:
+            object_path (str): Mesh file path.
+            rotate_z_degrees (float): Rotation around Z-axis in degrees.
+            normalize (bool): Scales object to unit size if True.
+            center (bool): Centers object in simulation space if True.
+        """
+
+        mesh = pv.read(object_path)
+        displace_vector = [0, 0, 0]
+        scaling_factor = 1
+
+        if center:
+            mesh, displace_vector, = pre_processing.move_mesh_to_origin(mesh)
+        if rotate_z_degrees:
+            mesh = mesh.rotate_z(rotate_z_degrees)
+        if normalize:
+            max_object_dimensions = (self.length * MAX_OBJECT_LENGTH_FACTOR,
+                                     self.width * MAX_OBJECT_WIDTH_FACTOR,
+                                     self.height * MAX_OBJECT_HEIGHT_FACTOR)
+            mesh, scaling_factor = pre_processing.normalize_mesh(
+                mesh, max_object_dimensions)
+
+        # Compute project area into the inlet face
+        self.object_area = pre_processing.compute_projected_area(
+            mesh, face_normal=(1, 0, 0))
+        self.object_length = pre_processing.compute_object_length(mesh)
+
+        self.object = mesh
+        return {
+            "displace_vector": displace_vector,
+            "rotate_z_degrees": rotate_z_degrees,
+            "scaling_factor": scaling_factor
+        }
 
     def _get_commands(self):
+        """
+        Returns a list of commands to be executed by openfoam.
 
+        Returns:
+            list: A list of commands.
+        """
         commands = [
             "runApplication surfaceFeatures",
             "runApplication blockMesh",
@@ -74,59 +149,44 @@ class WindTunnel:
         ]
         return commands
 
-    def simulate(
-        self,
-        object_path: str,
-        wind_speed_ms: float,
-        rotate_z_degrees: float,
-        num_iterations: int,
-        resolution: int,
-        display: bool = False,
-        machine_group_name: Optional[str] = None,
-    ):
-        """Simulates the wind tunnel scenario synchronously.
+    def display(self):
+        """Display the wind tunnel scenario."""
+        visualizer = WindTunnelVisualizer(**self._walls)
+        if self.object:
+            visualizer.add_mesh(self.object, color="blue", opacity=0.5)
+        visualizer.show()
 
-        Args:
-            object_path: Path to object inserted in the wind tunnel.
-            wind_speed_ms: Velocity of the air flow in m/s.
-            num_iterations: Number of iterations to run the simulation.
-            resolution: Resolution of the simulation grid.
-            display: Whether to display the meshes of object and wind tunnel on
-                the screen, before running the simulation.
-            machine_group_name: Name of the machine group to run simulation on.
+    def simulate(self,
+                 wind_speed_ms: float,
+                 num_iterations: int,
+                 resolution: int,
+                 machine_group_name: Optional[str] = None,
+                 inputs_base_dir: Optional[str] = "./inductiva_input"):
+        """Runs wind tunnel simulation with specified parameters.
+
+        Parameters:
+            wind_speed_ms (float): Air flow speed in m/s.
+            num_iterations (int): Simulation iteration count.
+            resolution (int): Grid resolution.
+            machine_group_name (Optional[str]): Machine group for simulation.
+            inputs_base_dir (Optional[str]): Local directory where the OpenFOAM
+                inputs files that are constructed by the WindTunnel class will
+                be stored. This can be useful for later reference, and for
+                inspecting exactly what the Inductiva API passed to OpenFOAM.
+                If set to None, nothing will be stored on the local disk.
         """
-
-        mesh = pv.read(object_path)
-
-        if display:
-            visualizer = WindTunnelVisualizer(**self._walls)
-            visualizer.add_mesh(mesh, color="blue", opacity=0.5)
+        if not self.object:
+            raise ValueError("Object not set. Please set object first.")
 
         mg = utils.get_machine_group(machine_group_name)
         num_vcpus = utils.get_number_subdomains(mg)
-
-        # save the transformations so we can revert them later
-        # pylint: disable=unused-variable
-        mesh, displace_vector, = pre_processing.move_mesh_to_origin(mesh)
-        mesh = mesh.rotate_z(rotate_z_degrees)
-        # pylint: disable=unused-variable
-        mesh, scaling_factor = pre_processing.normalize_mesh(mesh)
-
-        if display:
-            visualizer.add_mesh(mesh, color="green")
-            visualizer.show()
-
-        # Compute project area into the inlet face
-        area = pre_processing.compute_projected_area(mesh,
-                                                     face_normal=(1, 0, 0))
-        length = pre_processing.compute_object_length(mesh)
 
         # Create a temporary directory
         temp_dir = tempfile.mkdtemp()
         obj_dir = os.path.join(temp_dir, "constant/triSurface/")
         os.makedirs(obj_dir)
-        processed_object_path = os.path.join(obj_dir, "object.obj")
-        pre_processing.save_mesh_obj(mesh, processed_object_path)
+        object_path = os.path.join(obj_dir, "object.obj")
+        pre_processing.save_mesh_obj(self.object, object_path)
 
         inductiva.TemplateManager.render_dir(
             TEMPLATE_DIR,
@@ -135,8 +195,8 @@ class WindTunnel:
             num_iterations=num_iterations,
             resolution=resolution,
             num_subdomains=num_vcpus,  # num subdomains for parallel processing
-            area=area,
-            length=length,
+            area=self.object_area,
+            length=self.object_length,
             **self._walls,
         )
 
@@ -146,7 +206,8 @@ class WindTunnel:
                                          n_vcpus=num_vcpus,
                                          use_hwthreads=False)
 
-        task_dir = os.path.join(self._inputs_dir, task.id)
-        shutil.copytree(temp_dir, task_dir)
+        if inputs_base_dir:
+            task_dir = os.path.join(inputs_base_dir, task.id)
+            shutil.copytree(temp_dir, task_dir)
 
         return task

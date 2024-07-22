@@ -6,21 +6,21 @@ import vtk
 
 vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
 
-# dimensions in meters
-NORMALIZED_X_MAX = 10.0
-NORMALIZED_Y_MAX = 2.0
-NORMALIZED_Z_MAX = 1.0
 
-
-def _get_scaling_factor(mesh: pv.PolyData) -> float:
+def _get_scaling_factor(
+    mesh: pv.PolyData,
+    max_dimensions: tuple[float, float, float] = (10.0, 2.0, 1.0)
+) -> float:
     """
     Calculate the scaling factor required to normalize the mesh dimensions.
 
     Returns the most restrictive scaling factor to ensure the entire mesh fits
     within the specified bounds.
+    length, width, height = max_dimensions
 
     Args:
         mesh (pv.PolyData): The input mesh to be normalized.
+        max_dimensions: The maximum dimensions of the object.
 
     Returns:
         float: The scaling factor to apply to the mesh.
@@ -30,28 +30,33 @@ def _get_scaling_factor(mesh: pv.PolyData) -> float:
     z_dimension = mesh.bounds[5] - mesh.bounds[4]
 
     # Calculate the scaling factors for each axis
-    scaling_factor_x = NORMALIZED_X_MAX / x_dimension
-    scaling_factor_y = NORMALIZED_Y_MAX / y_dimension
-    scaling_factor_z = NORMALIZED_Z_MAX / z_dimension
+    scaling_factor_x = max_dimensions[0] / x_dimension
+    scaling_factor_y = max_dimensions[1] / y_dimension
+    scaling_factor_z = max_dimensions[2] / z_dimension
 
     # Use the most restrictive scaling factor
     return min(scaling_factor_x, scaling_factor_y, scaling_factor_z)
 
 
-def normalize_mesh(mesh: pv.PolyData) -> pv.PolyData:
+def normalize_mesh(
+    mesh: pv.PolyData,
+    max_dimensions: tuple[float, float, float] = (10.0, 2.0, 1.0)
+) -> pv.PolyData:
     """
     Normalize the dimensions of the input mesh.
 
     The mesh is scaled to fit within the specified bounds of the wind tunnel.
+    length, width, height = max_dimensions
 
     Args:
         mesh (pv.PolyData): The input mesh to be normalized.
+        max_dimensions: The maximum dimensions of the object.
 
     Returns:
         pv.PolyData: The normalized mesh.
         float: The scaling factor applied to the mesh.
     """
-    scaling_factor = _get_scaling_factor(mesh)
+    scaling_factor = _get_scaling_factor(mesh, max_dimensions)
     mesh = mesh.scale(scaling_factor)
 
     return mesh, scaling_factor
@@ -60,6 +65,13 @@ def normalize_mesh(mesh: pv.PolyData) -> pv.PolyData:
 def move_mesh_to_origin(mesh: pv.PolyData):
     """
     Translate the mesh to the origin of the wind tunnel.
+
+    Args:
+        mesh (pv.PolyData): The input mesh to be translated.
+
+    Returns:
+        pv.PolyData: The translated mesh.
+        tuple[float, float, float]: The displacement vector applied to the mesh.
     """
     # Get the z-coordinate of the lowest point of the mesh
     z_displace = mesh.bounds[4]
@@ -68,7 +80,7 @@ def move_mesh_to_origin(mesh: pv.PolyData):
     # Get the x-coordinate of the center of the mesh
     x_displace = (mesh.bounds[0] + mesh.bounds[1]) / 2
 
-    displace_vector = [-x_displace, -y_displace, -z_displace]
+    displace_vector = (-x_displace, -y_displace, -z_displace)
     mesh = mesh.translate(displace_vector)
     return mesh, displace_vector
 
