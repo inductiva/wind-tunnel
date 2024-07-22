@@ -28,10 +28,10 @@ Let's set an F1 car in a toy **wind tunnel** and run a simulation scenario:
 ```python
 import windtunnel
 
-
 # Create wind tunnel object
 wind_tunnel = windtunnel.WindTunnel(dimensions=(20,10,8))
 
+# Set the object in the windtunnel
 wind_tunnel.set_object(
     object_path="assets/f1_car.obj",
     rotate_z_degrees=0,
@@ -39,10 +39,10 @@ wind_tunnel.set_object(
     center=True,
 )
 
+# Display the Windtunnel with the object
 wind_tunnel.display()
 
-# Submit a simulation task at low resolution and
-# small number of iterations.
+# Submit a simulation task
 task = wind_tunnel.simulate(object_path="assets/f1_car.obj",
                             wind_speed_ms=20,
                             num_iterations=50,
@@ -53,7 +53,6 @@ task.wait()
 
 # Download all of the output files of the simulation
 output_dir = task.download_outputs()
-
 ```
 
 In this code snippet, we are using the `WindTunnel` to configure the
