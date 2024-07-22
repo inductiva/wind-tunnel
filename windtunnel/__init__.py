@@ -1,4 +1,4 @@
 """Expose a limited set of classes to the user."""
-from .windtunnel import (WindTunnel)
-from . import post_processing as postprocessing
-from .display import (WindTunnelVisualizer)
+from .display import WindTunnelVisualizer
+from .windtunnel import WindTunnel
+from .windtunnel_outputs import WindTunnelOutputs

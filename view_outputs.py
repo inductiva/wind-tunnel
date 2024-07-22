@@ -4,7 +4,6 @@ import inductiva
 from absl import app, flags, logging
 
 import windtunnel
-from windtunnel import postprocessing
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
@@ -24,30 +23,25 @@ def main(_):
     # Download all of the output files of the simulation
     output_dir = task.download_outputs()
 
-    coeff = postprocessing.get_force_coefficients(output_dir)
+    outputs = windtunnel.WindTunnelOutputs(output_dir)
+
+    coeff = outputs.get_force_coefficients()
+    pressure_field_mesh = outputs.get_interpolated_pressure_field()
+    streamlines_mesh = outputs.get_streamlines()
 
     print('Force Coefficients:')
     for key, value in coeff.items():
         print(f'{key}: {value}')
 
-    # pylint: disable=unused-variable
-    domain_mesh, object_mesh = postprocessing.get_output_mesh(output_dir)
-
+    # "p" for pressure field.
     visualizer = windtunnel.WindTunnelVisualizer(-6, 14, -5, 5, 0, 8)
     # visualizer.add_mesh(domain_mesh, opacity=0.5, show_edges=True)
-    # "p" for pressure field.
     # visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
-
-    pressure_field_mesh = postprocessing.get_interpolated_pressure_field(
-        output_dir, object_mesh)
     visualizer.add_mesh(pressure_field_mesh,
                         color='red',
                         opacity=1,
                         scalars='p')
-
-    streamlines_mesh = postprocessing.get_streamlines(output_dir, domain_mesh)
     visualizer.add_mesh(streamlines_mesh, color='blue', opacity=0.5)
-
     visualizer.show()
 
 
