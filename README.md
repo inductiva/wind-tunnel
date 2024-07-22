@@ -43,8 +43,7 @@ wind_tunnel.set_object(
 wind_tunnel.display()
 
 # Submit a simulation task
-task = wind_tunnel.simulate(object_path="assets/f1_car.obj",
-                            wind_speed_ms=20,
+task = wind_tunnel.simulate(wind_speed_ms=20,
                             num_iterations=50,
                             resolution=3)
 
