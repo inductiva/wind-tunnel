@@ -26,6 +26,7 @@ The **Wind Tunnel** package via Inductiva API allows users to set up and run vir
 
 3. Run simulations using provided scripts or create your own.
 
+
 .. toctree::
    :maxdepth: 5
    :caption: Table of Contents
@@ -34,4 +35,5 @@ The **Wind Tunnel** package via Inductiva API allows users to set up and run vir
    windtunnel.windtunnel
    windtunnel.windtunnel_outputs
    windtunnel.display
+   windtunnel.pre_processing
    windtunnel.utils
