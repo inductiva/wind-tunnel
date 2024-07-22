@@ -31,9 +31,9 @@ class WindTunnelOutputs:
         Args:
             simulation_path (str): Path to simulation output directory.
         """
-        self.simulation_path = simulation_path
-        self.time_steps = self._get_num_time_steps()
-        self.domain_mesh, self.object_mesh = self._get_output_meshes()
+        self._simulation_path = simulation_path
+        self._time_steps = self._get_num_time_steps()
+        self._domain_mesh, self._object_mesh = self._get_output_meshes()
 
     def get_force_coefficients(self):
         """
@@ -43,7 +43,7 @@ class WindTunnelOutputs:
             dict: Force coefficients including 'Moment', 'Drag', 'Lift',
             'Front Lift', and 'Rear Lift'.
         """
-        force_coefficients_path = os.path.join(self.simulation_path,
+        force_coefficients_path = os.path.join(self._simulation_path,
                                                "postProcessing", "forceCoeffs1",
                                                "0", "forceCoeffs.dat")
         coefficients = np.loadtxt(force_coefficients_path)[-1]
@@ -78,8 +78,8 @@ class WindTunnelOutputs:
         Returns:
             pv.PolyData: Streamlines as tube-shaped meshes.
         """
-        streamlines_mesh = self.domain_mesh.streamlines(
-            max_time=self.time_steps,
+        streamlines_mesh = self._domain_mesh.streamlines(
+            max_time=self._time_steps,
             n_points=n_points,
             initial_step_length=initial_step_length,
             source_radius=source_radius,
@@ -94,7 +94,7 @@ class WindTunnelOutputs:
         Returns:
             pv.PolyData: Object mesh with pressure field data.
         """
-        return self.object_mesh
+        return self._object_mesh
 
     def get_interpolated_pressure_field(self):
         """
@@ -103,11 +103,11 @@ class WindTunnelOutputs:
         Returns:
             pv.PolyData: Object mesh with interpolated pressure field.
         """
-        input_mesh_path = os.path.join(self.simulation_path, "constant",
+        input_mesh_path = os.path.join(self._simulation_path, "constant",
                                        "triSurface", "object.obj")
         input_mesh = pv.read(input_mesh_path)
 
-        interpolated_mesh = input_mesh.interpolate(self.object_mesh,
+        interpolated_mesh = input_mesh.interpolate(self._object_mesh,
                                                    sharpness=10,
                                                    radius=0.1,
                                                    n_points=1,
@@ -122,7 +122,7 @@ class WindTunnelOutputs:
         Returns:
             int: Number of time steps.
         """
-        force_coefficients_path = os.path.join(self.simulation_path,
+        force_coefficients_path = os.path.join(self._simulation_path,
                                                "postProcessing", "forceCoeffs1",
                                                "0", "forceCoeffs.dat")
         coefficients = np.loadtxt(force_coefficients_path)
@@ -140,11 +140,11 @@ class WindTunnelOutputs:
         # The OpenFOAM data reader from PyVista requires that a file named
         # "foam.foam" exists in the simulation output directory.
         # Create this file if it does not exist.
-        foam_file_path = os.path.join(self.simulation_path, "foam.foam")
+        foam_file_path = os.path.join(self._simulation_path, "foam.foam")
         pathlib.Path(foam_file_path).touch(exist_ok=True)
 
         reader = pv.OpenFOAMReader(foam_file_path)
-        reader.set_active_time_value(self.time_steps)
+        reader.set_active_time_value(self._time_steps)
 
         full_mesh = reader.read()
         domain_mesh = full_mesh["internalMesh"]
