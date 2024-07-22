@@ -30,16 +30,23 @@ import windtunnel
 
 
 # Create wind tunnel object
-wind_tunnel = windtunnel.WindTunnel()
+wind_tunnel = windtunnel.WindTunnel(dimensions=(20,10,8))
+
+wind_tunnel.set_object(
+    object_path="assets/f1_car.obj",
+    rotate_z_degrees=0,
+    normalize=False,
+    center=True,
+)
+
+wind_tunnel.display()
 
 # Submit a simulation task at low resolution and
 # small number of iterations.
 task = wind_tunnel.simulate(object_path="assets/f1_car.obj",
-                            wind_speed_ms=10,
-                            rotate_z_degrees=0,
+                            wind_speed_ms=20,
                             num_iterations=50,
-                            resolution=3,
-                            display=True)
+                            resolution=3)
 
 # Wait for the task to finish
 task.wait()
