@@ -7,6 +7,7 @@ positive x-direction with a certain velocity.
 
 An arbitrary object is placed within the tunnel, sucht that air flows
 around it, as illustrated in the schematic below:
+
 |--------------------------------|
 |->          _____               |
 |->        _/     |              |
@@ -20,13 +21,11 @@ to determine the steady-state of the system, i.e., where the flow
 does not change in time anymore.
 
 Currently, the following variables are fixed:
-- The fluid being inject is air.
-- Air only flows in the positive x-direction.
-- The flow is incompressible (this seems to be a reasonable approximation
-  until about Mach 0.3 which is 102.9 m/s, or 370.44 km/h). 
-  See https://www.quora.com/Is-air-an-incompressible-fluid
-- Some post-processing of the data occurs at run-time: streamlines,
-pressure_field, cutting planes and force coefficients.
+    - The fluid being inject is air.
+    - Air only flows in the positive x-direction.
+    - The flow is incompressible (this seems to be a reasonable approximation
+    until about Mach 0.3 which is 102.9 m/s, or 370.44 km/h). 
+    See https://www.quora.com/Is-air-an-incompressible-fluid
 """
 
 import os
