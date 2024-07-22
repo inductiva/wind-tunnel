@@ -58,9 +58,9 @@ output_dir = task.download_outputs()
 In this code snippet, we are using the `WindTunnel` to configure the
 simulation files for OpenFOAM, the F1 car and
 simulation parameters and simulating via **Inductiva API**. This scenario is a
-toy example that can be extended to more complex simulation scenarios, (e.g.,
-add rotation of wheels to the vehicle). 
+toy example that can be extended to more complex simulation scenarios.
 
+For more detailed information, please visit the [Wind Tunnel Documentation](https://wind-tunnel.readthedocs.io/).
 
 ## Installation
 
