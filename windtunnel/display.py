@@ -5,7 +5,7 @@ import vtk
 vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
 
 
-def get_x_aligned_rectangle(x, y_min, y_max, z_min, z_max):
+def _get_x_aligned_rectangle(x, y_min, y_max, z_min, z_max):
     y_mean = (y_min + y_max) / 2
     z_mean = (z_min + z_max) / 2
     y_length = y_max - y_min
@@ -17,7 +17,7 @@ def get_x_aligned_rectangle(x, y_min, y_max, z_min, z_max):
     return plane
 
 
-def get_y_aligned_rectangle(y, x_min, x_max, z_min, z_max):
+def _get_y_aligned_rectangle(y, x_min, x_max, z_min, z_max):
     x_mean = (x_min + x_max) / 2
     z_mean = (z_min + z_max) / 2
     x_length = x_max - x_min
@@ -29,7 +29,7 @@ def get_y_aligned_rectangle(y, x_min, x_max, z_min, z_max):
     return plane
 
 
-def get_z_aligned_rectangle(z, x_min, x_max, y_min, y_max):
+def _get_z_aligned_rectangle(z, x_min, x_max, y_min, y_max):
     x_mean = (x_min + x_max) / 2
     y_mean = (y_min + y_max) / 2
     x_length = x_max - x_min
@@ -111,22 +111,22 @@ class WindTunnelVisualizer:
         Parameters:
         - opacity (float): The opacity of the walls.
         """
-        plane = get_x_aligned_rectangle(self.x_min, self.y_min, self.y_max,
-                                        self.z_min, self.z_max)
+        plane = _get_x_aligned_rectangle(self.x_min, self.y_min, self.y_max,
+                                         self.z_min, self.z_max)
         self.plt.add_mesh(plane, color="red", opacity=opacity)
-        plane = get_x_aligned_rectangle(self.x_max, self.y_min, self.y_max,
-                                        self.z_min, self.z_max)
+        plane = _get_x_aligned_rectangle(self.x_max, self.y_min, self.y_max,
+                                         self.z_min, self.z_max)
         self.plt.add_mesh(plane, color="red", opacity=opacity, show_edges=True)
 
-        plane = get_y_aligned_rectangle(self.y_min, self.x_min, self.x_max,
-                                        self.z_min, self.z_max)
+        plane = _get_y_aligned_rectangle(self.y_min, self.x_min, self.x_max,
+                                         self.z_min, self.z_max)
         self.plt.add_mesh(plane,
                           color="green",
                           opacity=opacity,
                           show_edges=True)
 
-        plane = get_z_aligned_rectangle(self.z_min, self.x_min, self.x_max,
-                                        self.y_min, self.y_max)
+        plane = _get_z_aligned_rectangle(self.z_min, self.x_min, self.x_max,
+                                         self.y_min, self.y_max)
         self.plt.add_mesh(plane, color="blue", opacity=opacity, show_edges=True)
 
     def set_camera_position(self, camera_position):

@@ -130,7 +130,7 @@ class WindTunnel:
             "scaling_factor": scaling_factor
         }
 
-    def get_commands(self):
+    def _get_commands(self):
         """
         Returns a list of commands to be executed by openfoam.
 
@@ -202,7 +202,7 @@ class WindTunnel:
 
         task = simulators.OpenFOAM().run(input_dir=temp_dir,
                                          on=mg,
-                                         commands=self.get_commands(),
+                                         commands=self._get_commands(),
                                          n_vcpus=num_vcpus,
                                          use_hwthreads=False)
 
