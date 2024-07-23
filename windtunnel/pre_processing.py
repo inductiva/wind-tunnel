@@ -110,6 +110,13 @@ def compute_object_length(mesh: pv.PolyData):
 
 
 def save_mesh_obj(mesh, dest_object_path):
-    trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
-                                   faces=mesh.faces.reshape((-1, 4))[:, 1:])
+    faces = mesh.faces
+    if faces.shape[0] % 3 == 0:
+        trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
+                                       faces=mesh.faces.reshape((-1, 3))[:, 1:])
+    elif faces.shape[0] % 4 == 0:
+        trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
+                                       faces=mesh.faces.reshape((-1, 4))[:, 1:])
+    else:
+        raise ValueError("Invalid number of faces in the mesh")
     trimesh.exchange.export.export_mesh(trimesh_mesh, dest_object_path)
