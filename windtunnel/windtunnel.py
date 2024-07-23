@@ -103,6 +103,16 @@ class WindTunnel:
         """
 
         mesh = pv.read(object_path)
+
+        if isinstance(mesh, pv.MultiBlock):
+            joined_mesh = pv.PolyData()
+            for block in mesh:
+                mesh2 = block.extract_geometry()
+                mesh2 = mesh2.rotate_x(90)
+                mesh2 = mesh2.rotate_z(270)
+                joined_mesh += mesh2
+            mesh = joined_mesh
+
         displace_vector = [0, 0, 0]
         scaling_factor = 1
 
