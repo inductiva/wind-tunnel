@@ -104,6 +104,24 @@ class WindTunnelVisualizer:
             scalars=scalars,
         )
 
+    def add_force_coefficients(self, coefficients: dict):
+        moment = coefficients.get("Moment", 0)
+        drag = coefficients.get("Drag", 0)
+        lift = coefficients.get("Lift", 0)
+        front_lift = coefficients.get("Front Lift", 0)
+        rear_lift = coefficients.get("Rear Lift", 0)
+
+        force_coeffs_text = (f'Moment: {moment:.3f}\n'
+                             f'Drag: {drag:.3f}\n'
+                             f'Lift: {lift:.3f}\n'
+                             f'Front Lift: {front_lift:.3f}\n'
+                             f'Rear Lift: {rear_lift:.3f}')
+
+        self.plt.add_text(force_coeffs_text,
+                          position='upper_right',
+                          font_size=12,
+                          color='black')
+
     def _add_walls(self, opacity: float = 0.5):
         """
         Add walls to the visualization.
