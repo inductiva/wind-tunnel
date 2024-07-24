@@ -85,7 +85,8 @@ class WindTunnelVisualizer:
                  color: str = "blue",
                  opacity: float = 1.0,
                  show_edges: bool = False,
-                 scalars: str = None):
+                 scalars: str = None,
+                 clim: list = None):
         """
         Add a mesh to the visualization.
 
@@ -102,6 +103,7 @@ class WindTunnelVisualizer:
             opacity=opacity,
             show_edges=show_edges,
             scalars=scalars,
+            clim=clim,
         )
 
     def add_force_coefficients(self, coefficients: dict):
