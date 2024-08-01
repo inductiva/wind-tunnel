@@ -85,7 +85,8 @@ class WindTunnelVisualizer:
                  color: str = "blue",
                  opacity: float = 1.0,
                  show_edges: bool = False,
-                 scalars: str = None):
+                 scalars: str = None,
+                 clim: list = None):
         """
         Add a mesh to the visualization.
 
@@ -95,14 +96,14 @@ class WindTunnelVisualizer:
         - opacity (float): The opacity of the mesh.
         - show_edges (bool): Whether to show the edges of the mesh.
         - scalars (str): The scalar data to be used for coloring the mesh.
+        - clim (list): The scale limits for the scalar data.
         """
-        self.plt.add_mesh(
-            mesh,
-            color=color,
-            opacity=opacity,
-            show_edges=show_edges,
-            scalars=scalars,
-        )
+        self.plt.add_mesh(mesh,
+                          color=color,
+                          opacity=opacity,
+                          show_edges=show_edges,
+                          scalars=scalars,
+                          clim=clim)
 
     def _add_walls(self, opacity: float = 0.5):
         """
