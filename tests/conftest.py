@@ -1,3 +1,5 @@
+""" This file is used to add the parent directory to the sys.path
+    so that the tests can import from the windtunnel."""
 import os
 import sys
 
