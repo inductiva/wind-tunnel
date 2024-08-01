@@ -4,7 +4,7 @@ import math
 import pytest
 import pyvista as pv
 
-from windtunnel import windtunnel
+from windtunnel import pre_processing
 
 RESOLUTION = 1000
 
@@ -21,7 +21,7 @@ def test_compute_projected_area_sphere(radius):
     )
 
     expected_area = math.pi * radius**2
-    computed_area = windtunnel.pre_processing.compute_projected_area(
+    computed_area = pre_processing.compute_projected_area(
         sphere,
         face_normal=(1, 0, 0),
     )
@@ -40,7 +40,7 @@ def test_compute_projected_area_cylinder_top(radius, height):
     )
 
     expected_area = math.pi * radius**2
-    computed_area = windtunnel.pre_processing.compute_projected_area(
+    computed_area = pre_processing.compute_projected_area(
         cylinder,
         face_normal=(1, 0, 0),
     )
@@ -60,7 +60,7 @@ def test_compute_projected_area_cylinder_side(radius, height):
     )
 
     expected_area = 2 * radius * height
-    computed_area = windtunnel.pre_processing.compute_projected_area(
+    computed_area = pre_processing.compute_projected_area(
         cylinder,
         face_normal=(0, 1, 0),
     )
