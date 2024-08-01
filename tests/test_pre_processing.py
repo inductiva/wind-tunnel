@@ -4,7 +4,7 @@ import math
 import pytest
 import pyvista as pv
 
-import windtunnel
+from windtunnel import windtunnel
 
 RESOLUTION = 1000
 
