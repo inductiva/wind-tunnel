@@ -103,6 +103,9 @@ class WindTunnel:
         """
 
         mesh = pv.read(object_path)
+        if isinstance(mesh, pv.MultiBlock):
+            mesh = utils.convert_multiblock_to_mesh(mesh)
+
         displace_vector = [0, 0, 0]
         scaling_factor = 1
 
