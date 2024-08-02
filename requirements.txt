@@ -4,3 +4,4 @@ numpy
 pyvista
 trimesh
 vtk
+shapely

@@ -119,7 +119,7 @@ class WindTunnel:
 
         # Compute project area into the inlet face
         self.object_area = pre_processing.compute_projected_area(
-            mesh, face_normal=(1, 0, 0))
+            mesh, projection_plane="X")
         self.object_length = pre_processing.compute_object_length(mesh)
 
         self.object = mesh
