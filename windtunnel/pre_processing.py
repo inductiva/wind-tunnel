@@ -117,7 +117,7 @@ def save_mesh_obj(mesh, dest_object_path):
     elif mesh_type == pv.CellType.QUAD:
         shape_vertices = 4
     else:
-        raise ValueError("Invalid number of faces in the mesh")
+        raise ValueError("Mesh cell type not supported")
 
     trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
                                    faces=mesh.faces.reshape(
