@@ -1,10 +1,13 @@
 """Pre-processing utilities."""
 
 import pyvista as pv
+import shapely
 import trimesh
 import vtk
 
 vtk.vtkLogger.SetStderrVerbosity(vtk.vtkLogger.VERBOSITY_OFF)
+
+NUM_DECIMATION_CELLS = 5000
 
 
 def _get_scaling_factor(
@@ -85,8 +88,8 @@ def move_mesh_to_origin(mesh: pv.PolyData):
     return mesh, displace_vector
 
 
-def compute_projected_area(mesh: pv.PolyData, face_normal):
-    """Compute the projected area of an object.
+def compute_cutting_plane_area(mesh: pv.PolyData, face_normal):
+    """Compute the cutting plane area of an object.
 
     Args:
         mesh: pyvista.PolyData mesh representing the object.
@@ -100,6 +103,35 @@ def compute_projected_area(mesh: pv.PolyData, face_normal):
     area = filled_slice.area
 
     return area
+
+
+def compute_projected_area(mesh: pv.PolyData, projection_plane):
+    if projection_plane == 'X':
+        indices = [1, 2]
+        normal = (1, 0, 0)
+    elif projection_plane == 'Y':
+        indices = [0, 2]
+        normal = (0, 1, 0)
+    elif projection_plane == 'Z':
+        indices = [0, 1]
+        normal = (0, 0, 1)
+    else:
+        raise ValueError("Invalid projection plane. Choose from 'X', 'Y', 'Z'.")
+
+    decimation_factor = 1 - (NUM_DECIMATION_CELLS / mesh.n_cells)
+
+    if decimation_factor < 1:
+        mesh = mesh.triangulate()
+    mesh = mesh.decimate(decimation_factor)
+
+    projection = mesh.project_points_to_plane(origin=(0, 0, 0), normal=normal)
+    mesh_2d = pv.PolyData(projection)
+    merged = shapely.union_all([
+        shapely.Polygon(mesh_2d.points[tri][:, indices])
+        for tri in mesh_2d.triangulate().regular_faces
+    ])
+
+    return merged.area
 
 
 def compute_object_length(mesh: pv.PolyData):
