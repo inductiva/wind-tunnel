@@ -110,13 +110,15 @@ def compute_object_length(mesh: pv.PolyData):
 
 
 def save_mesh_obj(mesh, dest_object_path):
-    faces = mesh.faces
-    if faces.shape[0] % 3 == 0:
+    mesh_type = mesh.get_cell(0).type
+
+    if mesh_type == pv.CellType.TRIANGLE:
         shape_vertices = 3
-    elif faces.shape[0] % 4 == 0:
+    elif mesh_type == pv.CellType.QUAD:
         shape_vertices = 4
     else:
         raise ValueError("Invalid number of faces in the mesh")
+
     trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
                                    faces=mesh.faces.reshape(
                                        (-1, shape_vertices))[:, 1:])
