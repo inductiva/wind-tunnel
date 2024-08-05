@@ -142,6 +142,17 @@ def compute_object_length(mesh: pv.PolyData):
 
 
 def save_mesh_obj(mesh, dest_object_path):
+    mesh_type = mesh.get_cell(0).type
+
+    # pyvista has an extra value for the number of vertices in the cell
+    if mesh_type == pv.CellType.TRIANGLE:
+        shape_vertices = 4
+    elif mesh_type == pv.CellType.QUAD:
+        shape_vertices = 5
+    else:
+        raise ValueError('Mesh cell type not supported')
+
     trimesh_mesh = trimesh.Trimesh(vertices=mesh.points,
-                                   faces=mesh.faces.reshape((-1, 4))[:, 1:])
+                                   faces=mesh.faces.reshape(
+                                       (-1, shape_vertices))[:, 1:])
     trimesh.exchange.export.export_mesh(trimesh_mesh, dest_object_path)

@@ -3,6 +3,7 @@
 from typing import Optional
 
 import inductiva
+import pyvista as pv
 
 
 def get_number_subdomains(machine_group: inductiva.resources.MachineGroup):
@@ -31,3 +32,16 @@ def get_machine_group(machine_group_name: Optional[str] = None):
         return None
     mg = inductiva.resources.machine_groups.get_by_name(machine_group_name)
     return mg
+
+
+def convert_multiblock_to_mesh(mesh):
+    """Converts a multi-block mesh to a single mesh by joining all blocks.
+
+    Args:
+        mesh: The multi-block mesh to be converted.
+    """
+    joined_mesh = pv.PolyData()
+    for block in mesh:
+        block_mesh = block.extract_geometry()
+        joined_mesh += block_mesh
+    return joined_mesh
