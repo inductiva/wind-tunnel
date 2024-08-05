@@ -8,6 +8,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_boolean('debug', False, 'Enable debug mode')
 flags.DEFINE_string('object_path', 'assets/f1_car.obj',
                     'Path to the object file')
+flags.DEFINE_boolean('display', False, 'Display the simulation')
 flags.DEFINE_string(
     'machine_group_name', None,
     'Machine group to run the simulation on. Defaults to default queue')
