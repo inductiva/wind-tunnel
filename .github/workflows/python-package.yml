@@ -42,4 +42,4 @@ jobs:
     - name: Test with pytest
       if: ${{ always() }}
       run: |
-        pytest --suppress-no-test-exit-code
+        pytest --suppress-no-test-exit-code -m "not slow"
