@@ -24,7 +24,10 @@ flags.DEFINE_string(
 
 def run_simulation(object_path):
     wind_tunnel = windtunnel.WindTunnel()
-    wind_tunnel.set_object(object_path, rotate_z_degrees=FLAGS.rotate_z_degrees)
+    wind_tunnel.set_object(object_path,
+                           rotate_z_degrees=FLAGS.rotate_z_degrees,
+                           normalize=False,
+                           center=True)
 
     if FLAGS.display:
         wind_tunnel.display()
