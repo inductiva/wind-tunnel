@@ -42,6 +42,53 @@ def _get_z_aligned_rectangle(z, x_min, x_max, y_min, y_max):
     return plane
 
 
+def plot_force_coefficients(force_coefficients_file_path: str,
+                            coefficient: str):
+    """Visualize a graph of the evolution of a force coefficient.
+
+    Can be used to visualize the evolution of the Moment, Drag, Lift,
+    Front Lift, and Rear Lift coefficients.
+
+    Parameters:
+    - file_path (str): The path to the force coefficients file.
+    - coefficient (str): The force coefficient to visualize.
+    """
+
+    coefficient = coefficient.lower()
+    coeffs_map = {
+        "moment": 1,
+        "drag": 2,
+        "lift": 3,
+        "front lift": 4,
+        "rear lift": 5
+    }
+    if coefficient not in coeffs_map:
+        raise ValueError(f"Invalid coefficient: {coefficient} must be one of \
+                (Moment, Drag, Lift, Front Lift, Rear Lift)")
+
+    time = []
+    coeff = []
+
+    with open(force_coefficients_file_path, "r", encoding="utf-8") as file:
+        for _ in range(9):
+            next(file)
+
+        for line in file:
+            print(line)
+            columns = line.split()
+            time.append(float(columns[0]))
+            coeff.append(float(columns[coeffs_map[coefficient]]))
+
+    plt.figure(figsize=(10, 6))
+    plt.axhline(y=0.28, color="r", linestyle="--")
+    plt.plot(time, coeff, color="b")
+    plt.xlabel("Time")
+    plt.ylabel(f"{coefficient}")
+    plt.title(f"{coefficient} vs Time")
+    plt.grid(True)
+    plt.show()
+
+
 class WindTunnelVisualizer:
     """
     A class for visualizing wind tunnel data.
