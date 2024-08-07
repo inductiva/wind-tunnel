@@ -11,10 +11,10 @@ flags.DEFINE_boolean("debug", False, "Enable debug mode")
 flags.DEFINE_string("object_path_folder", "assets/test_objects",
                     "Path to the folder with the object file")
 flags.DEFINE_integer("wind_speed_ms", 16, "Wind speed in meters per second")
-flags.DEFINE_integer("resolution", 3, "Resolution of the simulation")
+flags.DEFINE_integer("resolution", 5, "Resolution of the simulation")
 flags.DEFINE_integer("rotate_z_degrees", 0,
                      "Rotation angle around the Z-axis in degrees")
-flags.DEFINE_integer("num_iterations", 50,
+flags.DEFINE_integer("num_iterations", 300,
                      "Number of iterations to run the simulation")
 flags.DEFINE_boolean("display", False, "Display the simulation")
 flags.DEFINE_string(
@@ -54,6 +54,9 @@ def main(_):
 
     for object_path, task in zip(objects_path, tasks):
         task.wait()
+        if task.is_failed():
+            print("--------------------")
+            print(f"Simulation for {object_path} failed.")
         output_dir = task.download_outputs()
         outputs = windtunnel.WindTunnelOutputs(output_dir)
         coeffs = outputs.get_force_coefficients()
