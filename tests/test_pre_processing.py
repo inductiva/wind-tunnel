@@ -1,5 +1,6 @@
 """Unit tests of the pre_processing submodule."""
 import math
+import os
 
 import pytest
 import pyvista as pv
@@ -62,23 +63,10 @@ def test_compute_projected_area_cylinder_side(radius, height):
 
 
 @pytest.mark.parametrize(
-    "object_path",
-    [
-        "assets/test_objects/cube.obj", "assets/test_objects/sphere.obj",
-        "assets/test_objects/ellipsoid.obj", "assets/test_objects/bike.obj",
-        "assets/test_objects/drivaer.obj"
-    ],
+    "filename",
+    ["cube.obj", "sphere.obj", "ellipsoid.obj", "bike.obj", "drivaer.obj"],
 )
-def test_compute_projected_area(object_path):
-    object_name = object_path.split("/")[-1]
-    assert object_name in [
-        "cube.obj",
-        "sphere.obj",
-        "ellipsoid.obj",
-        "bike.obj",
-        "drivaer.obj",
-    ]
-
+def test_compute_projected_area(filename):
     expected_projected_area = {
         "cube.obj": 1.0,
         "sphere.obj": 0.79,
@@ -86,34 +74,21 @@ def test_compute_projected_area(object_path):
         "bike.obj": 0.644,
         "drivaer.obj": 2.16
     }
-
-    mesh = pv.read(object_path)
+    mesh_path = os.path.join("assets/test_objects", filename)
+    mesh = pv.read(mesh_path)
     mesh, _ = pre_processing.move_mesh_to_origin(mesh)
     computed_area = pre_processing.compute_projected_area(mesh,
                                                           projection_plane="X")
-    expected_area = expected_projected_area[object_name]
+    expected_area = expected_projected_area[filename]
 
     assert computed_area == pytest.approx(expected_area, rel=1e-2)
 
 
 @pytest.mark.parametrize(
-    "object_path",
-    [
-        "assets/test_objects/cube.obj", "assets/test_objects/sphere.obj",
-        "assets/test_objects/ellipsoid.obj", "assets/test_objects/bike.obj",
-        "assets/test_objects/drivaer.obj"
-    ],
+    "filename",
+    ["cube.obj", "sphere.obj", "ellipsoid.obj", "bike.obj", "drivaer.obj"],
 )
-def test_compute_object_length(object_path):
-    object_name = object_path.split("/")[-1]
-    assert object_name in [
-        "cube.obj",
-        "sphere.obj",
-        "ellipsoid.obj",
-        "bike.obj",
-        "drivaer.obj",
-    ]
-
+def test_compute_object_length(filename):
     expected_object_length = {
         "cube.obj": 1.0,
         "sphere.obj": 1.0,
@@ -122,8 +97,9 @@ def test_compute_object_length(object_path):
         "drivaer.obj": 4.61
     }
 
-    mesh = pv.read(object_path)
+    mesh_path = os.path.join("assets/test_objects", filename)
+    mesh = pv.read(mesh_path)
     mesh, _ = pre_processing.move_mesh_to_origin(mesh)
     computed_length = pre_processing.compute_object_length(mesh)
-    expected_length = expected_object_length[object_name]
+    expected_length = expected_object_length[filename]
     assert computed_length == pytest.approx(expected_length, rel=1e-2)
