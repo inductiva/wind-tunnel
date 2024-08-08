@@ -26,21 +26,20 @@ def windtunnel_task_fixture():
     yield task, transformations
 
 
+@pytest.fixture(scope="module", name="windtunnel_outputs")
+def windtunnel_outputs_fixture(windtunnel_task):
+    task, _ = windtunnel_task
+    output_dir = task.download_outputs()
+    outputs = windtunnel.WindTunnelOutputs(output_dir)
+    yield outputs
+
+
 @pytest.mark.slow
 @pytest.mark.dependency()
 def test_task_status(windtunnel_task):
     task, _ = windtunnel_task
     task.wait()
     assert task.get_status() == "success"
-
-
-@pytest.fixture(scope="module", name="windtunnel_outputs")
-@pytest.mark.dependency(depends=["test_task_status"])
-def windtunnel_outputs_fixture(windtunnel_task):
-    task, _ = windtunnel_task
-    output_dir = task.download_outputs()
-    outputs = windtunnel.WindTunnelOutputs(output_dir)
-    yield outputs
 
 
 # The force coefficients here are not the ground truth values.
@@ -100,9 +99,8 @@ def test_reverse_transformation(windtunnel_task, windtunnel_outputs):
     original_bbox = original_mesh.bounds
     pressure_field_bbox = pressure_field_mesh.bounds
 
-    for orig_dim, press_dim in zip(original_bbox, pressure_field_bbox):
-        for orig_val, press_val in zip(orig_dim, press_dim):
-            pytest.approx(abs(orig_val - press_val), rel=1e-2)
+    for orig_val, press_val in zip(original_bbox, pressure_field_bbox):
+        assert orig_val == pytest.approx(press_val, rel=1e-2)
 
 
 @pytest.mark.slow
