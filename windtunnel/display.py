@@ -74,7 +74,6 @@ def plot_force_coefficients(force_coefficients_file_path: str,
             next(file)
 
         for line in file:
-            print(line)
             columns = line.split()
             time.append(float(columns[0]))
             coeff.append(float(columns[coeffs_map[coefficient]]))
