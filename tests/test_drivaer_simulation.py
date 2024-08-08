@@ -43,6 +43,10 @@ def windtunnel_outputs_fixture(windtunnel_task):
     yield outputs
 
 
+# The force coefficients here are not the ground truth values.
+# They are only an approximation for lower resolution simulations.
+# The object is also normalized, hence this should only used for
+# sanity checking the implementation.
 @pytest.mark.slow
 @pytest.mark.dependency(depends=["test_task_status"])
 def test_force_coefficients(windtunnel_outputs):

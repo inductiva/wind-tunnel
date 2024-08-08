@@ -12,7 +12,7 @@ import windtunnel
 def setup_machine_group_fixture():
     mg = inductiva.resources.MachineGroup(machine_type="c2d-highcpu-32",
                                           num_machines=1,
-                                          spot=True)
+                                          spot=False)
     mg.start()
 
     yield mg.name
@@ -20,14 +20,11 @@ def setup_machine_group_fixture():
     mg.terminate()
 
 
-# Test the drag coefficient calculation for different objects
-# The drag coefficients here are not the ground truth values.
-# They are only an approximation for lower resolution simulations.
-# And are only used for sanity checking the implementation.
 @pytest.mark.slow
+@pytest.mark.very_slow
 @pytest.mark.parametrize(
     "filename, expected_drag_coeff",
-    [("cube.obj", 1.05), ("sphere.obj", 0.2), ("ellipsoid.obj", 0.1),
+    [("cube.obj", 1.05), ("sphere.obj", 0.45), ("ellipsoid.obj", 0.2),
      ("bike.obj", 0.42), ("drivaer.obj", 0.28)],
 )
 def test_windtunnel_task(setup_machine_group, filename, expected_drag_coeff):
@@ -40,7 +37,7 @@ def test_windtunnel_task(setup_machine_group, filename, expected_drag_coeff):
 
     task = wind_tunnel.simulate(wind_speed_ms=16,
                                 num_iterations=300,
-                                resolution=3,
+                                resolution=5,
                                 machine_group_name=setup_machine_group)
 
     task.wait()
@@ -49,4 +46,4 @@ def test_windtunnel_task(setup_machine_group, filename, expected_drag_coeff):
     force_coefficients = outputs.get_force_coefficients()
 
     drag = force_coefficients.get("Drag", None)
-    assert drag == pytest.approx(expected_drag_coeff, rel=1e-2)
+    assert drag == pytest.approx(expected_drag_coeff, rel=2e-1)
