@@ -181,7 +181,7 @@ class WindTunnel:
             raise ValueError("Object not set. Please set object first.")
 
         mg = utils.get_machine_group(machine_group_name)
-        num_vcpus = utils.get_number_subdomains(mg)
+        num_subdomains = utils.get_number_subdomains(mg)
 
         # Create a temporary directory
         temp_dir = tempfile.mkdtemp()
@@ -196,7 +196,7 @@ class WindTunnel:
             wind_speed=wind_speed_ms,
             num_iterations=num_iterations,
             resolution=resolution,
-            num_subdomains=num_vcpus,  # num subdomains for parallel processing
+            num_subdomains=num_subdomains,
             area=self.object_area,
             length=self.object_length,
             **self._walls,
@@ -205,7 +205,7 @@ class WindTunnel:
         task = simulators.OpenFOAM().run(input_dir=temp_dir,
                                          on=mg,
                                          commands=self._get_commands(),
-                                         n_vcpus=num_vcpus,
+                                         n_vcpus=num_subdomains,
                                          use_hwthreads=False)
 
         if inputs_base_dir:
