@@ -69,7 +69,7 @@ def test_compute_projected_area_cylinder_side(radius, height):
         "assets/test_objects/drivaer.obj"
     ],
 )
-def test_compute_projected_area_test_objects(object_path):
+def test_compute_projected_area(object_path):
     object_name = object_path.split("/")[-1]
     assert object_name in [
         "cube.obj",
@@ -94,3 +94,36 @@ def test_compute_projected_area_test_objects(object_path):
     expected_area = expected_projected_area[object_name]
 
     assert computed_area == pytest.approx(expected_area, rel=1e-2)
+
+
+@pytest.mark.parametrize(
+    "object_path",
+    [
+        "assets/test_objects/cube.obj", "assets/test_objects/sphere.obj",
+        "assets/test_objects/ellipsoid.obj", "assets/test_objects/bike.obj",
+        "assets/test_objects/drivaer.obj"
+    ],
+)
+def test_compute_object_length(object_path):
+    object_name = object_path.split("/")[-1]
+    assert object_name in [
+        "cube.obj",
+        "sphere.obj",
+        "ellipsoid.obj",
+        "bike.obj",
+        "drivaer.obj",
+    ]
+
+    expected_object_length = {
+        "cube.obj": 1.0,
+        "sphere.obj": 1.0,
+        "ellipsoid.obj": 2.0,
+        "bike.obj": 2.05,
+        "drivaer.obj": 4.61
+    }
+
+    mesh = pv.read(object_path)
+    mesh, _ = pre_processing.move_mesh_to_origin(mesh)
+    computed_length = pre_processing.compute_object_length(mesh)
+    expected_length = expected_object_length[object_name]
+    assert computed_length == pytest.approx(expected_length, rel=1e-2)
