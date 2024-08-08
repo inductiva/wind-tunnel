@@ -5,3 +5,5 @@ pyvista
 trimesh
 vtk
 shapely
+pytest
+pytest-dependency
