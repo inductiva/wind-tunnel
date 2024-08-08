@@ -79,7 +79,6 @@ def plot_force_coefficients(force_coefficients_file_path: str,
             coeff.append(float(columns[coeffs_map[coefficient]]))
 
     plt.figure(figsize=(10, 6))
-    plt.axhline(y=0.28, color="r", linestyle="--")
     plt.plot(time, coeff, color="b")
     plt.xlabel("Time")
     plt.ylabel(f"{coefficient}")
