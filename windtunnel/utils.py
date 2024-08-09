@@ -16,7 +16,7 @@ def get_number_subdomains(machine_group: inductiva.resources.MachineGroup):
 
     if machine_group is None:
         return 4  # Number of subdomains for the default machine group
-    num_vcpus = machine_group.n_vcpus.total
+    num_vcpus = machine_group.n_vcpus.per_machine
     num_subdomains = num_vcpus // 2
     return num_subdomains
 
