@@ -62,8 +62,8 @@ class WindTunnelOutputs:
         Returns:
             pv.PolyData: Input object mes.
         """
-        input_mesh_path = os.path.join(
-            self._simulation_path, "constant", "triSurface", "object.obj"
+        input_mesh_path = os.path.join(self._simulation_path, "constant",
+                                       "triSurface", "object.obj"
         )
         input_mesh = pv.read(input_mesh_path)
         return input_mesh
