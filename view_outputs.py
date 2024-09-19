@@ -26,6 +26,8 @@ def main(_):
     outputs = windtunnel.WindTunnelOutputs(output_dir)
 
     coeff = outputs.get_force_coefficients()
+    input_mesh = outputs.get_input_mesh()  # pylint: disable=unused-variable
+    openfoam_mesh = outputs.get_openfoam_object_mesh()  # pylint: disable=unused-variable
     pressure_field_mesh = outputs.get_interpolated_pressure_field()
     streamlines_mesh = outputs.get_streamlines()
 
@@ -35,8 +37,6 @@ def main(_):
 
     # "p" for pressure field.
     visualizer = windtunnel.WindTunnelVisualizer(-6, 14, -5, 5, 0, 8)
-    # visualizer.add_mesh(domain_mesh, opacity=0.5, show_edges=True)
-    # visualizer.add_mesh(object_mesh, color="red", opacity=0.5, scalars="p")
     visualizer.add_mesh(pressure_field_mesh,
                         color='red',
                         opacity=1,

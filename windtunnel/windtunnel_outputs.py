@@ -55,6 +55,19 @@ class WindTunnelOutputs:
 
         return coefficients_dict
 
+    def get_input_mesh(self):
+        """
+        Retrieves the input object mesh.
+
+        Returns:
+            pv.PolyData: Input object mes.
+        """
+        input_mesh_path = os.path.join(
+            self._simulation_path, "constant", "triSurface", "object.obj"
+        )
+        input_mesh = pv.read(input_mesh_path)
+        return input_mesh
+
     def get_streamlines(self,
                         n_points=100,
                         initial_step_length=1,
